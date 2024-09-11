@@ -22,13 +22,15 @@ export default function NewPatientForm() {
 
    useEffect(() => {
       // 진료부서 조회
-      axios.get('/rec/getPart')
+      axios.get('http://localhost:8085/rec/getPart', {withCredentials: true})
          .then((res) => {
-         setParts(res.data.map(part => ({ label: part.partName, value: part.partNum }))); // 가정: partName과 partNum 필드 사용
-         console.log(res.data);
+         setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
+            // setParts(res.data);
+            console.log("이아래");
+            console.log("********* 이건 아니지 *********" + res.data);
          })
          .catch((error) => {
-         console.error('Error fetching parts:', error);
+            alert(error);
          });
 
       // 담당의 조회 (가정: 동일 API 혹은 다른 API에서 가져오기)
