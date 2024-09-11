@@ -20,7 +20,19 @@ export default function NewPatientForm() {
       staffNum: ''
    });
 
-
+   useEffect(() => {
+      // 진료부서 조회
+      axios.get('http://localhost:8085/rec/getPart', {withCredentials: true})
+         .then((res) => {
+         setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
+            // setParts(res.data);
+            console.log("이아래");
+            console.log("********* 이건 아니지 *********" + res.data);
+         })
+         .catch((error) => {
+            alert(error);
+         });
+})
 useEffect(() => {
    axios.get('/rec/getPart')
       .then(res => {
