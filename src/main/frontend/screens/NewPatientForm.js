@@ -27,25 +27,28 @@ export default function NewPatientForm() {
          setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
             // setParts(res.data);
             console.log("이아래");
+            console.log(parts)
             console.log("********* 이건 아니지 *********" + res.data);
          })
          .catch((error) => {
             alert(error);
          });
-})
+},[])
+
 useEffect(() => {
-   axios.get('/rec/getPart')
-      .then(res => {
-         if (Array.isArray(res.data)) {
-         setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
-         } else {
-         console.error('Expected array but got:', res.data);
-         }
-      })
-      .catch(error => {
-         console.error('Error fetching parts:', error);
-      });
-}, []);
+   // 선택된 진료부서가 있을 때만 담당의 조회
+   if (formDataRec.partNum) {
+      axios.get(`http://localhost:8085/rec/selectStaffName/${formDataRec.partNum}`, { withCredentials: true })
+         .then(res => {
+            setStaffs(res.data.map(staff => ({ label: staff.staffName, value: staff.staffNum })));
+         })
+         .catch(error => {
+            alert('담당의 데이터를 가져오는 중 오류가 발생했습니다.');
+         });
+   } else {
+      setStaffs([]); // 진료부서가 선택되지 않았을 때는 담당의 목록을 비웁니다.
+   }
+}, [formDataRec.partNum]);
 
 
    const patieInputChange = (field, value, index) => {
