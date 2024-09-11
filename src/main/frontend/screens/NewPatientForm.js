@@ -51,14 +51,17 @@ useEffect(() => {
 }, [formDataRec.partNum]);
 
 
-   const patieInputChange = (field, value, index) => {
-      setFormDataPatie(prevState => ({
-         ...prevState,
-         [field]: index !== undefined
-         ? prevState[field].map((item, idx) => idx === index ? value : item)
-         : value
-      }));
-   };
+   const handleInputChange = (text, index, type) => {
+   // 숫자만 입력받도록 필터링
+   const numericValue = text.replace(/[^0-9]/g, '');
+
+   if (type === 'birth') {
+      patieInputChange('patieBirth', [numericValue, formDataPatie.patieBirth[1]], index);
+   } else if (type === 'tel') {
+      patieInputChange('patieTel', [numericValue, formDataPatie.patieTel[1], formDataPatie.patieTel[2]], index);
+   }
+};
+
 
    const recInputChange = (field, value) => {
       setFormDataRec(prevState => ({
