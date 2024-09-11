@@ -24,10 +24,6 @@
         VALUES(#{patieNum}, #{patieName}, #{patieTel}, #{patieBirth}, #{patieAddr}, #{patieGen});
     </insert>
 
-
-
-
-
 </mapper>
 
 
