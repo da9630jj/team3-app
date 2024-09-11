@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -16,31 +16,25 @@ export default function NewPatientForm() {
    });
    const [formDataRec, setFormDataRec] = useState({
       recDetail: '',
-      partName: '',
-      staffName: '',
+      partNum: '',
+      staffNum: ''
    });
 
-   useEffect(() => {
-      // 진료부서 조회
-      axios.get('/rec/getPart')
-         .then((res) => {
-         setParts(res.data.map(part => ({ label: part.partName, value: part.partNum }))); // 가정: partName과 partNum 필드 사용
-         console.log(res.data);
-         })
-         .catch((error) => {
-         console.error('Error fetching parts:', error);
-         });
 
-      // 담당의 조회 (가정: 동일 API 혹은 다른 API에서 가져오기)
-      // axios.get('/rec/selectStaffName')
-      //    .then((res) => {
-      //    setStaffs(res.data.map(staff => ({ label: staff.staffName, value: staff.staffNum }))); // 가정: staffName과 staffNum 필드 사용
-      //    console.log(res.data);
-      //    })
-      //    .catch((error) => {
-      //    console.error('Error fetching staffs:', error);
-      //    });
-   }, []);
+useEffect(() => {
+   axios.get('/rec/getPart')
+      .then(res => {
+         if (Array.isArray(res.data)) {
+         setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
+         } else {
+         console.error('Expected array but got:', res.data);
+         }
+      })
+      .catch(error => {
+         console.error('Error fetching parts:', error);
+      });
+}, []);
+
 
    const patieInputChange = (field, value, index) => {
       setFormDataPatie(prevState => ({
@@ -58,168 +52,172 @@ export default function NewPatientForm() {
       }));
    };
 
-   const tableDataPatie = [
-      {
-         label: '이름',
-         component: (value, onChange) => (
-         <TextInput
-            style={styles.input}
-            onChangeText={onChange}
-            value={value}
-         />
-         )
-      },
-      {
-         label: '주민번호',
-         component: (value, onChange) => (
-         <View style={styles.inputContainer}>
-            <TextInput
-               style={[styles.input, styles.inputSmall]}
-               onChangeText={(text) => onChange(text, 0)}
-               value={value[0]}
-            />
-            <Text style={styles.dash}>-</Text>
-            <TextInput
-               style={[styles.input, styles.inputSmall]}
-               onChangeText={(text) => onChange(text, 1)}
-               value={value[1]}
-            />
-         </View>
-         )
-      },
-      {
-         label: '연락처',
-         component: (value, onChange) => (
-         <View style={styles.inputContainer}>
-            <TextInput
-               style={[styles.input, styles.inputSmall]}
-               onChangeText={(text) => onChange(text, 0)}
-               value={value[0]}
-            />
-            <Text style={styles.dash}>-</Text>
-            <TextInput
-               style={[styles.input, styles.inputSmall]}
-               onChangeText={(text) => onChange(text, 1)}
-               value={value[1]}
-            />
-            <Text style={styles.dash}>-</Text>
-            <TextInput
-               style={[styles.input, styles.inputSmall]}
-               onChangeText={(text) => onChange(text, 2)}
-               value={value[2]}
-            />
-         </View>
-         )
-      },
-      {
-         label: '주소',
-         component: (value, onChange) => (
-         <View style={styles.inputContainer}>
-            <TextInput
-               style={[styles.input, styles.inputSmall]}
-               onChangeText={(text) => onChange(text, 0)}
-               value={value[0]}
-            />
-            <TextInput
-               style={styles.input}
-               placeholder='상세주소 입력'
-               onChangeText={(text) => onChange(text, 1)}
-               value={value[1]}
-            />
-         </View>
-         )
+   const handleSubmit = () => {
+      // 필수 값이 비어 있는지 확인
+      if (!formDataPatie.patieName || !formDataPatie.patieTel[0] || !formDataPatie.patieBirth[0] ||
+         !formDataPatie.patieAddr[0] || !formDataRec.partNum || !formDataRec.staffNum) {
+         Alert.alert('경고', '모든 필드를 입력하세요.');
+         return;
       }
-   ];
 
-   const tableDataRec = [
-      {
-         label: '증상',
-         component: (value, onChange) => (
-         <TextInput
-            style={[styles.input, styles.textArea]}
-            onChangeText={onChange}
-            value={value}
-            multiline
-         />
-         )
-      },
-      {
-         label: '진료부서',
-         component: (value, onChange) => (
-         <RNPickerSelect
-            placeholder={{ label: '진료부서 선택', value: '' }}
-            value={value}
-            onValueChange={onChange}
-            items={parts}
-            style={pickerStyles}
-         />
-         )
-      },
-      {
-         label: '담당의',
-         component: (value, onChange) => (
-         <RNPickerSelect
-            placeholder={{ label: '담당의 선택', value: '' }}
-            value={value}
-            onValueChange={onChange}
-            items={staffs}
-            style={pickerStyles}
-         />
-         )
-      }
-   ];
+      // 데이터 전송 로직
+      axios.post('/patie/insertPatie', {
+         ...formDataPatie,
+         patieBirth: formDataPatie.patieBirth.join('-'),
+         patieTel: formDataPatie.patieTel.join('-'),
+         patieAddr: formDataPatie.patieAddr.join(' ')
+      })
+         .then(res => {
+         const patieNum = res.data;
+         return axios.post('/rec/insertRec', {
+            ...formDataRec,
+            patieNum: patieNum,
+            recDetail: formDataRec.recDetail
+         });
+         })
+         .then(() => {
+         Alert.alert('완료', '등록되었습니다.');
+         navigate('WaitingInfo'); // Adjust this as needed for your navigation
+         })
+         .catch(error => {
+         console.error('Error submitting form:', error);
+         });
+   };
 
    return (
       <View style={styles.container}>
-         <Text style={styles.titleText}>환자 정보</Text>
-         {tableDataPatie.map((item, index) => (
-         <View key={index} style={styles.row}>
-            <View style={[styles.cell, styles.cell1]}>
-               <Text style={styles.text}>{item.label}</Text>
-            </View>
-            <View style={[styles.cell, styles.cell2]}>
-               {item.component(
-               formDataPatie[Object.keys(formDataPatie)[index]],
-               (value, i) => patieInputChange(Object.keys(formDataPatie)[index], value, i)
-               )}
+         <Text style={styles.titleText}>첫방문 환자 진료 정보 추가</Text>
+         <Text style={styles.titleText}>환자 기본 정보</Text>
+         <View style={styles.row}>
+         <View style={styles.cell}>
+            <Text style={styles.text}>이름</Text>
+         </View>
+         <View style={styles.cell}>
+            <TextInput
+               style={styles.input}
+               onChangeText={(text) => patieInputChange('patieName', text)}
+               value={formDataPatie.patieName}
+            />
+         </View>
+         </View>
+         <View style={styles.row}>
+         <View style={styles.cell}>
+            <Text style={styles.text}>주민등록번호</Text>
+         </View>
+         <View style={styles.cell}>
+            <View style={styles.inputContainer}>
+               <TextInput
+               style={[styles.input, styles.inputSmall]}
+               onChangeText={(text) => patieInputChange('patieBirth', [text, formDataPatie.patieBirth[1]], 0)}
+               value={formDataPatie.patieBirth[0]}
+               keyboardType='numeric'
+               />
+               <Text style={styles.dash}>-</Text>
+               <TextInput
+               style={[styles.input, styles.inputSmall]}
+               onChangeText={(text) => patieInputChange('patieBirth', [formDataPatie.patieBirth[0], text], 1)}
+               value={formDataPatie.patieBirth[1]}
+               keyboardType='numeric'
+               />
             </View>
          </View>
-         ))}
-         <Text style={[styles.titleText, styles.titleTextNext]}>사전 문진</Text>
-         {tableDataRec.map((item, index) => (
-         <View key={index} style={styles.row}>
-            <View style={[styles.cell, styles.cell1]}>
-               <Text style={styles.text}>{item.label}</Text>
-            </View>
-            <View style={[styles.cell, styles.cell2]}>
-               {item.component(
-               formDataRec[Object.keys(formDataRec)[index]],
-               value => recInputChange(Object.keys(formDataRec)[index], value)
-               )}
+         </View>
+         <View style={styles.row}>
+         <View style={styles.cell}>
+            <Text style={styles.text}>연락처</Text>
+         </View>
+         <View style={styles.cell}>
+            <View style={styles.inputContainer}>
+               <TextInput
+               style={[styles.input, styles.inputSmall]}
+               onChangeText={(text) => patieInputChange('patieTel', [text, formDataPatie.patieTel[1], formDataPatie.patieTel[2]], 0)}
+               value={formDataPatie.patieTel[0]}
+               keyboardType='numeric'
+               />
+               <Text style={styles.dash}>-</Text>
+               <TextInput
+               style={[styles.input, styles.inputSmall]}
+               onChangeText={(text) => patieInputChange('patieTel', [formDataPatie.patieTel[0], text, formDataPatie.patieTel[2]], 1)}
+               value={formDataPatie.patieTel[1]}
+               keyboardType='numeric'
+               />
+               <Text style={styles.dash}>-</Text>
+               <TextInput
+               style={[styles.input, styles.inputSmall]}
+               onChangeText={(text) => patieInputChange('patieTel', [formDataPatie.patieTel[0], formDataPatie.patieTel[1], text], 2)}
+               value={formDataPatie.patieTel[2]}
+               keyboardType='numeric'
+               />
             </View>
          </View>
-         ))}
+         </View>
+         <View style={styles.row}>
+         <View style={styles.cell}>
+            <Text style={styles.text}>주소</Text>
+         </View>
+         <View style={styles.cell}>
+            <View style={styles.inputContainer}>
+               <TextInput
+               style={[styles.input, styles.inputSmall]}
+               onChangeText={(text) => patieInputChange('patieAddr', [text, formDataPatie.patieAddr[1]], 0)}
+               value={formDataPatie.patieAddr[0]}
+               />
+               <TextInput
+               style={styles.input}
+               onChangeText={(text) => patieInputChange('patieAddr', [formDataPatie.patieAddr[0], text], 1)}
+               value={formDataPatie.patieAddr[1]}
+               />
+            </View>
+         </View>
+         </View>
 
-         {/* --------------난중에 삭제--------------- */}
-         <View>
-         <Text style={[styles.titleText, styles.titleTextNext]}>적용 확인용</Text>
-         <Text>이름: {formDataPatie.patieName}</Text>
-         <Text>주민번호: {formDataPatie.patieBirth}</Text>
-         <Text>연락처: {formDataPatie.patieTel}</Text>
-         <Text>주소: {formDataPatie.patieAddr}</Text>
-         <Text>증상: {formDataRec.recDetail}</Text>
-         <Text>진료부서: {formDataRec.partName}</Text>
-         <Text>담당의: {formDataRec.staffName}</Text>
+         <Text style={[styles.titleText, styles.titleTextNext]}>진료 정보</Text>
+         <View style={styles.row}>
+         <View style={styles.cell}>
+            <Text style={styles.text}>증상</Text>
          </View>
-         {/* --------------난중에 삭제---------------- */}
+         <View style={styles.cell}>
+            <TextInput
+               style={[styles.input, styles.textArea]}
+               onChangeText={(text) => recInputChange('recDetail', text)}
+               value={formDataRec.recDetail}
+               multiline
+            />
+         </View>
+         </View>
+         <View style={styles.row}>
+         <View style={styles.cell}>
+            <Text style={styles.text}>진료부서</Text>
+         </View>
+         <View style={styles.cell}>
+            <RNPickerSelect
+               placeholder={{ label: '진료부서 선택', value: '' }}
+               value={formDataRec.partNum}
+               onValueChange={(value) => recInputChange('partNum', value)}
+               items={parts}
+               style={pickerStyles}
+            />
+         </View>
+         </View>
+         <View style={styles.row}>
+         <View style={styles.cell}>
+            <Text style={styles.text}>담당의</Text>
+         </View>
+         <View style={styles.cell}>
+            <RNPickerSelect
+               placeholder={{ label: '담당의 선택', value: '' }}
+               value={formDataRec.staffNum}
+               onValueChange={(value) => recInputChange('staffNum', value)}
+               items={staffs}
+               style={pickerStyles}
+            />
+         </View>
+         </View>
 
          <View style={[styles.btnDiv, styles.bottomDiv]}>
          <TouchableOpacity
             style={styles.btn}
-            onPress={() => {
-               // 난중엔 등록 함수가 올 듯…
-               navigate("WaitingInfo");
-            }}
+            onPress={handleSubmit}
          >
             <Text style={styles.btnText}>작성 완료</Text>
          </TouchableOpacity>
@@ -228,86 +226,79 @@ export default function NewPatientForm() {
    );
    }
 
-   // 스타일 정의
    const styles = StyleSheet.create({
    container: {
       flex: 1,
-      padding: 16,
-      backgroundColor: '#fff',
-      justifyContent: 'center'
+      padding: 20,
+      backgroundColor: '#f5f5f5',
    },
    titleText: {
+      fontSize: 20,
       fontWeight: 'bold',
+      marginBottom: 10,
    },
    titleTextNext: {
-      marginTop: 100,
+      marginTop: 20,
    },
    row: {
       flexDirection: 'row',
+      marginBottom: 10,
    },
    cell: {
-      borderBottomWidth: 2,
-      borderColor: '#ddd',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 10,
+      flex: 1,
    },
-   cell1: { flex: 1 },
-   cell2: { flex: 3 },
-   text: { textAlign: 'center', fontSize: 12 },
+   text: {
+      fontSize: 16,
+   },
    input: {
-      width: '100%', // 전체 너비 사용
-      textAlign: 'center',
-      borderColor: 'none',
-      padding: 5,
-      backgroundColor: '#f1f1f1',
-      borderRadius: 3
+      borderWidth: 1,
+      borderColor: '#ccc',
+      padding: 10,
+      borderRadius: 4,
+      backgroundColor: '#fff',
    },
    inputSmall: {
-      flex: 1,
+      width: '30%',
+   },
+   textArea: {
+      height: 100,
    },
    inputContainer: {
       flexDirection: 'row',
-      alignItems: 'center'
+      alignItems: 'center',
    },
    dash: {
-      marginHorizontal: 10
-   },
-   textArea: {
-      height: 80
+      fontSize: 18,
+      marginHorizontal: 5,
    },
    btnDiv: {
       marginTop: 20,
-      alignItems: 'center',
    },
    btn: {
-      backgroundColor: '#f1f1f1',
-      borderRadius: 3,
-      width: '100%',
-      paddingVertical: 10
+      backgroundColor: '#007bff',
+      padding: 15,
+      borderRadius: 5,
    },
    btnText: {
+      color: '#fff',
       textAlign: 'center',
-      fontWeight: 'bold',
+      fontSize: 16,
    },
-   bottomDiv: {
-      marginTop: 'auto'
-   }
    });
 
    const pickerStyles = StyleSheet.create({
    inputIOS: {
-      fontSize: 12,
-      width: '100%',
-      color: '#000000',
-      borderColor: '#000000',
-      padding: 10
+      borderWidth: 1,
+      borderColor: '#ccc',
+      padding: 10,
+      borderRadius: 4,
+      backgroundColor: '#fff',
    },
    inputAndroid: {
-      fontSize: 12,
-      width: '100%',
-      color: '#000000',
-      borderRadius: 12,
-      padding: 10
+      borderWidth: 1,
+      borderColor: '#ccc',
+      padding: 10,
+      borderRadius: 4,
+      backgroundColor: '#fff',
    },
 });
