@@ -9,7 +9,7 @@ public interface PatieService {
     //다음에 들어간 환자번호 조회
     int getNextPatieNum();
 
-    /*첫방문 환자등록*/
+    /*초진 환자 전용*/
     void insertPatie(PatieVO patieVO);
 
 

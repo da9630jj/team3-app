@@ -17,6 +17,7 @@ public class PatieServiceImpl implements PatieService {
         return sqlSession.selectOne("patieMapper.getNextPatieNum");
     }
 
+    /*초진 환자 전용*/
     @Override
     public void insertPatie(PatieVO patieVO) {
         sqlSession.insert("patieMapper.insertPatie", patieVO);

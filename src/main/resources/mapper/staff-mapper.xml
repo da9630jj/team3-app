@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 해당 파일에 모든 쿼리문을 작성 -->
+<mapper namespace="staffMapper">
+    <resultMap id="staff" type="com.green.team3_app.rec.vo.StaffVO">
+        <id column="STAFF_NUM" property="staffNum"/>
+        <result column="STAFF_NAME" property="staffName"/>
+        <result column="STAFF_ROLE" property="staffRole"/>
+        <result column="STAFF_BIRTH" property="staffBirth"/>
+        <result column="STAFF_TEL" property="staffTel"/>
+        <result column="STAFF_ADDR" property="staffAddr"/>
+        <result column="STAFF_ID" property="staffId"/>
+        <result column="STAFF_PW" property="staffPw"/>
+        <result column="STAFF_GEN" property="staffGen"/>
+        <result column="HIRE_DATE" property="hireDate"/>
+        <result column="PART_NUM" property="partNum"/>
+        <association property="part" resultMap="part"/>
+    </resultMap>
+
+    <resultMap id="part" type="com.green.team3_app.rec.vo.PartVO">
+        <id column="PART_NUM" property="partNum"/>
+        <result column="PART_NAME" property="partName"/>
+    </resultMap>
+
+    <!-- 부서 목록 조회 -->
+    <select id="getPartList" resultMap="part">
+        SELECT PART_NUM
+            , PART_NAME
+        FROM HOS_PART
+        ORDER BY PART_NUM ASC
+    </select>
+
+    <!--담당의 조회-->
+    <select id="selectStaffName" resultMap="staff">
+        SELECT P.PART_NUM, P.PART_NAME, STAFF_NAME, STAFF_NUM
+        FROM HOS_PART P, HOS_STAFF S
+        WHERE P.PART_NUM = S.PART_NUM
+        AND P.PART_NUM = #{partNum}
+        AND STAFF_ROLE = 'DOCTOR'
+    </select>
+
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,22 +1,56 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 export default function NewPatientForm() {
    const { navigate } = useNavigation();
+   const [parts, setParts] = useState([]);
+   const [staffs, setStaffs] = useState([]);
+   const [formDataPatie, setFormDataPatie] = useState({
+      patieName: '',
+      patieBirth: ['', ''],
+      patieTel: ['', '', ''],
+      patieAddr: ['', '']
+   });
+   const [formDataRec, setFormDataRec] = useState({
+      recDetail: '',
+      partName: '',
+      staffName: '',
+   });
 
-   // patieInputChange 입력 변경 처리 함수
+   useEffect(() => {
+      // 진료부서 조회
+      axios.get('/rec/getPart')
+         .then((res) => {
+         setParts(res.data.map(part => ({ label: part.partName, value: part.partNum }))); // 가정: partName과 partNum 필드 사용
+         console.log(res.data);
+         })
+         .catch((error) => {
+         console.error('Error fetching parts:', error);
+         });
+
+      // 담당의 조회 (가정: 동일 API 혹은 다른 API에서 가져오기)
+      // axios.get('/rec/selectStaffName')
+      //    .then((res) => {
+      //    setStaffs(res.data.map(staff => ({ label: staff.staffName, value: staff.staffNum }))); // 가정: staffName과 staffNum 필드 사용
+      //    console.log(res.data);
+      //    })
+      //    .catch((error) => {
+      //    console.error('Error fetching staffs:', error);
+      //    });
+   }, []);
+
    const patieInputChange = (field, value, index) => {
       setFormDataPatie(prevState => ({
          ...prevState,
          [field]: index !== undefined
-            ? prevState[field].map((item, idx) => idx === index ? value : item)
-            : value
+         ? prevState[field].map((item, idx) => idx === index ? value : item)
+         : value
       }));
    };
 
-   // recInputChange 입력 변경 처리 함수
    const recInputChange = (field, value) => {
       setFormDataRec(prevState => ({
          ...prevState,
@@ -24,203 +58,178 @@ export default function NewPatientForm() {
       }));
    };
 
-   // tableDataPatie 테이블 정의
    const tableDataPatie = [
       {
          label: '이름',
          component: (value, onChange) => (
-            <TextInput
-               style={styles.input}
-               onChangeText={onChange}
-               value={value}
-            />
+         <TextInput
+            style={styles.input}
+            onChangeText={onChange}
+            value={value}
+         />
          )
       },
       {
          label: '주민번호',
          component: (value, onChange) => (
-            <View style={styles.inputContainer}>
-               <TextInput
-                  style={[styles.input, styles.inputSmall]}
-                  onChangeText={(text) => onChange(text, 0)}
-                  value={value[0]}
-               />
-               <Text style={styles.dash}>-</Text>
-               <TextInput
-                  style={[styles.input, styles.inputSmall]}
-                  onChangeText={(text) => onChange(text, 1)}
-                  value={value[1]}
-               />
-            </View>
+         <View style={styles.inputContainer}>
+            <TextInput
+               style={[styles.input, styles.inputSmall]}
+               onChangeText={(text) => onChange(text, 0)}
+               value={value[0]}
+            />
+            <Text style={styles.dash}>-</Text>
+            <TextInput
+               style={[styles.input, styles.inputSmall]}
+               onChangeText={(text) => onChange(text, 1)}
+               value={value[1]}
+            />
+         </View>
          )
       },
       {
          label: '연락처',
          component: (value, onChange) => (
-            <View style={styles.inputContainer}>
-               <TextInput
-                  style={[styles.input, styles.inputSmall]}
-                  onChangeText={(text) => onChange(text, 0)}
-                  value={value[0]}
-               />
-               <Text style={styles.dash}>-</Text>
-               <TextInput
-                  style={[styles.input, styles.inputSmall]}
-                  onChangeText={(text) => onChange(text, 1)}
-                  value={value[1]}
-               />
-               <Text style={styles.dash}>-</Text>
-               <TextInput
-                  style={[styles.input, styles.inputSmall]}
-                  onChangeText={(text) => onChange(text, 2)}
-                  value={value[2]}
-               />
-            </View>
+         <View style={styles.inputContainer}>
+            <TextInput
+               style={[styles.input, styles.inputSmall]}
+               onChangeText={(text) => onChange(text, 0)}
+               value={value[0]}
+            />
+            <Text style={styles.dash}>-</Text>
+            <TextInput
+               style={[styles.input, styles.inputSmall]}
+               onChangeText={(text) => onChange(text, 1)}
+               value={value[1]}
+            />
+            <Text style={styles.dash}>-</Text>
+            <TextInput
+               style={[styles.input, styles.inputSmall]}
+               onChangeText={(text) => onChange(text, 2)}
+               value={value[2]}
+            />
+         </View>
          )
       },
       {
          label: '주소',
          component: (value, onChange) => (
-            <View style={styles.inputContainer}>
-               <TextInput
-                  style={[styles.input, styles.inputSmall]}
-                  onChangeText={(text) => onChange(text, 0)}
-                  value={value[0]}
-               />
-               <TextInput
-                  style={styles.input}
-                  placeholder='상세주소 입력'
-                  onChangeText={(text) => onChange(text, 1)}
-                  value={value[1]}
-               />
-            </View>
+         <View style={styles.inputContainer}>
+            <TextInput
+               style={[styles.input, styles.inputSmall]}
+               onChangeText={(text) => onChange(text, 0)}
+               value={value[0]}
+            />
+            <TextInput
+               style={styles.input}
+               placeholder='상세주소 입력'
+               onChangeText={(text) => onChange(text, 1)}
+               value={value[1]}
+            />
+         </View>
          )
       }
    ];
 
-   // tableDataRec 테이블 정의
    const tableDataRec = [
       {
          label: '증상',
          component: (value, onChange) => (
-            <TextInput
-               style={[styles.input, styles.textArea]}
-               onChangeText={onChange}
-               value={value}
-               multiline
-            />
+         <TextInput
+            style={[styles.input, styles.textArea]}
+            onChangeText={onChange}
+            value={value}
+            multiline
+         />
          )
       },
       {
          label: '진료부서',
          component: (value, onChange) => (
-            <RNPickerSelect
-               placeholder={{ label: '진료부서 선택', value: '' }}
-               value={value}
-               onValueChange={onChange}
-               items={[
-                  { label: '진료부서1', value: '진료부서1' },
-                  { label: '진료부서2', value: '진료부서2' },
-                  { label: '진료부서3', value: '진료부서3' },
-               ]}
-               style={pickerStyles}
-            />
+         <RNPickerSelect
+            placeholder={{ label: '진료부서 선택', value: '' }}
+            value={value}
+            onValueChange={onChange}
+            items={parts}
+            style={pickerStyles}
+         />
          )
       },
       {
          label: '담당의',
          component: (value, onChange) => (
-            <RNPickerSelect
-               placeholder={{ label: '담당의 선택', value: '' }}
-               value={value}
-               onValueChange={onChange}
-               items={[
-                  { label: '담당의1', value: '담당의1' },
-                  { label: '담당의2', value: '담당의2' },
-                  { label: '담당의3', value: '담당의3' },
-               ]}
-               style={pickerStyles}
-            />
+         <RNPickerSelect
+            placeholder={{ label: '담당의 선택', value: '' }}
+            value={value}
+            onValueChange={onChange}
+            items={staffs}
+            style={pickerStyles}
+         />
          )
       }
    ];
-
-   // formDataPatie 정의
-   const [formDataPatie, setFormDataPatie] = useState({
-      patieName: '',
-      patieBirth: ['', ''],
-      patieTel: ['', '', ''],
-      patieAddr: ['', '']
-   });
-
-   // formDataRec 정의
-   const [formDataRec, setFormDataRec] = useState({
-      recDetail: '',
-      partName: '',
-      staffName: '',
-   });
 
    return (
       <View style={styles.container}>
          <Text style={styles.titleText}>환자 정보</Text>
          {tableDataPatie.map((item, index) => (
-            <View key={index} style={styles.row}>
-               <View style={[styles.cell, styles.cell1]}>
-                  <Text style={styles.text}>{item.label}</Text>
-               </View>
-               <View style={[styles.cell, styles.cell2]}>
-                  {item.component(
-                     formDataPatie[Object.keys(formDataPatie)[index]],
-                     (value, i) => patieInputChange(Object.keys(formDataPatie)[index], value, i)
-                  )}
-               </View>
+         <View key={index} style={styles.row}>
+            <View style={[styles.cell, styles.cell1]}>
+               <Text style={styles.text}>{item.label}</Text>
             </View>
+            <View style={[styles.cell, styles.cell2]}>
+               {item.component(
+               formDataPatie[Object.keys(formDataPatie)[index]],
+               (value, i) => patieInputChange(Object.keys(formDataPatie)[index], value, i)
+               )}
+            </View>
+         </View>
          ))}
          <Text style={[styles.titleText, styles.titleTextNext]}>사전 문진</Text>
          {tableDataRec.map((item, index) => (
-            <View key={index} style={styles.row}>
-               <View style={[styles.cell, styles.cell1]}>
-                  <Text style={styles.text}>{item.label}</Text>
-               </View>
-               <View style={[styles.cell, styles.cell2]}>
-                  {item.component(
-                     formDataRec[Object.keys(formDataRec)[index]],
-                     value => recInputChange(Object.keys(formDataRec)[index], value)
-                  )}
-               </View>
+         <View key={index} style={styles.row}>
+            <View style={[styles.cell, styles.cell1]}>
+               <Text style={styles.text}>{item.label}</Text>
             </View>
+            <View style={[styles.cell, styles.cell2]}>
+               {item.component(
+               formDataRec[Object.keys(formDataRec)[index]],
+               value => recInputChange(Object.keys(formDataRec)[index], value)
+               )}
+            </View>
+         </View>
          ))}
 
          {/* --------------난중에 삭제--------------- */}
          <View>
-            <Text style={[styles.titleText, styles.titleTextNext]}>적용 확인용</Text>
-            <Text>이름: {formDataPatie.patieName}</Text>
-            <Text>주민번호: {formDataPatie.patieBirth}</Text>
-            <Text>연락처: {formDataPatie.patieTel}</Text>
-            <Text>주소: {formDataPatie.patieAddr}</Text>
-            <Text>증상: {formDataRec.recDetail}</Text>
-            <Text>진료부서: {formDataRec.partName}</Text>
-            <Text>담당의: {formDataRec.staffName}</Text>
+         <Text style={[styles.titleText, styles.titleTextNext]}>적용 확인용</Text>
+         <Text>이름: {formDataPatie.patieName}</Text>
+         <Text>주민번호: {formDataPatie.patieBirth}</Text>
+         <Text>연락처: {formDataPatie.patieTel}</Text>
+         <Text>주소: {formDataPatie.patieAddr}</Text>
+         <Text>증상: {formDataRec.recDetail}</Text>
+         <Text>진료부서: {formDataRec.partName}</Text>
+         <Text>담당의: {formDataRec.staffName}</Text>
          </View>
          {/* --------------난중에 삭제---------------- */}
 
          <View style={[styles.btnDiv, styles.bottomDiv]}>
-            <TouchableOpacity
-               style={styles.btn}
-               onPress={() => {
-                  // 난중엔 등록 함수가 올 듯…
-                  navigate("WaitingInfo");
-               }}
-            >
-               <Text style={styles.btnText}>작성 완료</Text>
-            </TouchableOpacity>
+         <TouchableOpacity
+            style={styles.btn}
+            onPress={() => {
+               // 난중엔 등록 함수가 올 듯…
+               navigate("WaitingInfo");
+            }}
+         >
+            <Text style={styles.btnText}>작성 완료</Text>
+         </TouchableOpacity>
          </View>
       </View>
    );
-}
+   }
 
-// 스타일 정의
-const styles = StyleSheet.create({
+   // 스타일 정의
+   const styles = StyleSheet.create({
    container: {
       flex: 1,
       padding: 16,
@@ -284,9 +293,9 @@ const styles = StyleSheet.create({
    bottomDiv: {
       marginTop: 'auto'
    }
-});
+   });
 
-const pickerStyles = StyleSheet.create({
+   const pickerStyles = StyleSheet.create({
    inputIOS: {
       fontSize: 12,
       width: '100%',
