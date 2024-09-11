@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 해당 파일에 모든 쿼리문을 작성 -->
+<mapper namespace="recMapper">
+    <resultMap id="rec" type="com.green.team3_app.rec.vo.RecVO">
+        <id column="REC_NUM" property="recNum"/>
+        <result column="REC_DATE" property="recDate"/>
+        <result column="REC_EDATE" property="recEDate"/>
+        <result column="IS_REC" property="isRec"/>
+        <result column="REC_STATUS" property="recStatus"/>
+        <result column="REC_DETAIL" property="recDetail"/>
+        <result column="PATIE_NUM" property="patieNum"/>
+        <result column="STAFF_NUM" property="staffNum"/>
+        <result column="COLOR" property="color"/>
+        <result column="PERSONAL_YN" property="personalYN"/>
+        <association property="staffVO" resultMap="staffMapper.staff" />
+        <association property="patieVO" resultMap="patieMapper.patie" />
+    </resultMap>
+
+    <insert id="insertRec">
+        INSERT INTO HOS_REC(REC_DATE, IS_REC, REC_STATUS, REC_DETAIL, PATIE_NUM, STAFF_NUM)
+        VALUES(NOW(), 'N', '대기', #{recDetail}, #{patieNum}, #{staffNum})
+    </insert>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

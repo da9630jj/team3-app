@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 해당 파일에 모든 쿼리문을 작성 -->
+<mapper namespace="patieMapper">
+	<resultMap id="patie" type="com.green.team3_app.patie.vo.PatieVO">
+        <id column="PATIE_NUM" property="patieNum"/>
+        <result column="PATIE_NAME" property="patieName"/>
+        <result column="PATIE_TEL" property="patieTel"/>
+        <result column="PATIE_BIRTH" property="patieBirth"/>
+        <result column="PATIE_ADDR" property="patieAddr"/>
+        <result column="PATIE_GEN" property="patieGen"/>
+        <result column="PERSONAL_YN " property="personalYN"/>
+    </resultMap>
+
+    <!--다음에 들어갈 환자번호 조회-->
+    <select id="getNextPatieNum" resultType="int">
+        SELECT IFNULL(MAX(PATIE_NUM), 0) + 1
+        FROM HOS_PATIE
+    </select>
+
+    <insert id="insertPatie">
+        INSERT INTO HOS_PATIE(PATIE_NUM, PATIE_NAME, PATIE_TEL, PATIE_BIRTH, PATIE_ADDR, PATIE_GEN)
+        VALUES(#{patieNum}, #{patieName}, #{patieTel}, #{patieBirth}, #{patieAddr}, #{patieGen});
+    </insert>
+
+
+
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
