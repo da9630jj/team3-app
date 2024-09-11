@@ -17,49 +17,10 @@ export default function NewPatientForm() {
    const [formDataRec, setFormDataRec] = useState({
       recDetail: '',
       partName: '',
-      staffName: '',
+      staffName: ''
    });
 
-   useEffect(() => {
-      // 진료부서 조회
-      axios.get('http://localhost:8085/rec/getPart', {withCredentials: true})
-         .then((res) => {
-         setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
-            // setParts(res.data);
-            console.log("이아래");
-            console.log("********* 이건 아니지 *********" + res.data);
-         })
-         .catch((error) => {
-            alert(error);
-         });
-
-      // 담당의 조회 (가정: 동일 API 혹은 다른 API에서 가져오기)
-      // axios.get('/rec/selectStaffName')
-      //    .then((res) => {
-      //    setStaffs(res.data.map(staff => ({ label: staff.staffName, value: staff.staffNum }))); // 가정: staffName과 staffNum 필드 사용
-      //    console.log(res.data);
-      //    })
-      //    .catch((error) => {
-      //    console.error('Error fetching staffs:', error);
-      //    });
-   }, []);
-
-   const patieInputChange = (field, value, index) => {
-      setFormDataPatie(prevState => ({
-         ...prevState,
-         [field]: index !== undefined
-         ? prevState[field].map((item, idx) => idx === index ? value : item)
-         : value
-      }));
-   };
-
-   const recInputChange = (field, value) => {
-      setFormDataRec(prevState => ({
-         ...prevState,
-         [field]: value
-      }));
-   };
-
+   
    const tableDataPatie = [
       {
          label: '이름',
@@ -170,6 +131,46 @@ export default function NewPatientForm() {
          )
       }
    ];
+
+   useEffect(() => {
+      // 진료부서 조회
+      axios.get('http://localhost:8085/rec/getPart', {withCredentials: true})
+         .then((res) => {
+            setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
+         })
+         .catch((error) => {
+            alert(error);
+         });
+      }, []);
+
+
+   useEffect(() => {
+      // 담당의 조회 
+      axios.get(`http://localhost:8085/rec/selectStaffName/${formDataRec.partName}`, {withCredentials: true})
+      .then((res) => {
+         setStaffs(res.data.map(staff => ({ label: staff.staffName, value: staff.staffNum })));
+         console.log(res.data);
+      })
+      .catch((error) => {
+         console.error('Error fetching staffs:', error);
+      });
+   }, []);
+
+   const patieInputChange = (field, value, index) => {
+      setFormDataPatie(prevState => ({
+         ...prevState,
+         [field]: index !== undefined
+         ? prevState[field].map((item, idx) => idx === index ? value : item)
+         : value
+      }));
+   };
+
+   const recInputChange = (field, value) => {
+      setFormDataRec(prevState => ({
+         ...prevState,
+         [field]: value
+      }));
+   };
 
    return (
       <View style={styles.container}>
