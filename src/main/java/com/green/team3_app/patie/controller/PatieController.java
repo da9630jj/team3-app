@@ -2,6 +2,7 @@ package com.green.team3_app.patie.controller;
 
 import com.green.team3_app.patie.service.PatieService;
 import com.green.team3_app.patie.vo.PatieVO;
+import com.green.team3_app.patie.vo.ReceivePatieVO;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,12 +17,19 @@ public class PatieController {
 
     /*초진 환자 전용*/
     @PostMapping("/insertPatie")
-    public int insertPatie(@RequestBody PatieVO patieVO){
+    public int insertPatie(@RequestBody ReceivePatieVO receivePatieVO){
+        System.out.println(receivePatieVO);
+
         //이번에 추가할 환자번호 조회
         int patieNum = patieService.getNextPatieNum();
 
-        //환자정보 등록
+        PatieVO patieVO = new PatieVO();
         patieVO.setPatieNum(patieNum);
+        patieVO.setPatieBirth(receivePatieVO.getPatieBirth().get(0) + "-" + receivePatieVO.getPatieBirth().get(1));
+        patieVO.setPatieAddr(receivePatieVO.getPatieAddr().get(0) + " " + receivePatieVO.getPatieAddr().get(1));
+        patieVO.setPatieTel(receivePatieVO.getPatieTel().get(0) + "-" + receivePatieVO.getPatieTel().get(1) + "-" + receivePatieVO.getPatieTel().get(2));
+        patieVO.setPatieName(receivePatieVO.getPatieName());
+
         patieService.insertPatie(patieVO);
 
         return patieNum;
