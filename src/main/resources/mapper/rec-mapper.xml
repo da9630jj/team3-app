@@ -52,7 +52,7 @@
         WHERE REC_STATUS = '대기'
         AND STAFF_NUM IN (SELECT STAFF_NUM FROM HOS_STAFF WHERE PART_NUM = #{partNum})
     </select>
-	
+
 </mapper>
 
 

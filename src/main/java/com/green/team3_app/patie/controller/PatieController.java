@@ -4,10 +4,7 @@ import com.green.team3_app.patie.service.PatieService;
 import com.green.team3_app.patie.vo.PatieVO;
 import com.green.team3_app.patie.vo.ReceivePatieVO;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/partie")
@@ -33,5 +30,11 @@ public class PatieController {
         patieService.insertPatie(patieVO);
 
         return patieNum;
+    }
+
+    /*초진 환자 접수 취소*/
+    @DeleteMapping("/delFirPatie/{patieNum}")
+    public void delFirPatie(@PathVariable("patieNum") int patieNum){
+        patieService.delFirPatie(patieNum);
     }
 }

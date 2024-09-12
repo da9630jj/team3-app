@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, RefreshControl, ScrollView } 
 import { useRoute, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Home from './Home';
 
 export default function WaitingInfo() {
    const route = useRoute();
@@ -19,25 +20,29 @@ export default function WaitingInfo() {
    }, [patieNum]);
 
    const fetchWaitPatie = () => {
+      // 기본 대기 정보 
       axios.get(`http://localhost:8085/rec/waitPatie/${patieNum}`, { withCredentials: true })
       .then((res) => {
          console.log(res.data);
          setWaitPatie(res.data);
          const partNum = res.data.staffVO.part?.partNum;
-         if (partNum) {
-               axios.get(`http://localhost:8085/rec/waitCount/${partNum}`, { withCredentials: true })
-               .then((res) => {
-                  console.log(res.data);
-                  setWaitCount(res.data);
-               })
-               .catch((error) => { console.log(error); });
 
-               axios.get(`http://localhost:8085/rec/estimatedWaitTime/${partNum}`, { withCredentials: true })
-               .then((res) => {
-                  console.log(res.data);
-                  setEstimatedWaitTime(res.data);
-               })
-               .catch((error) => { console.log(error); });
+         // 대기인원 정보
+         if (partNum) {
+            axios.get(`http://localhost:8085/rec/waitCount/${partNum}`, { withCredentials: true })
+            .then((res) => {
+               console.log(res.data);
+               setWaitCount(res.data);
+            })
+            .catch((error) => { console.log(error); });
+
+            // 예상 대기 시간 정보
+            axios.get(`http://localhost:8085/rec/estimatedWaitTime/${partNum}`, { withCredentials: true })
+            .then((res) => {
+               console.log(res.data);
+               setEstimatedWaitTime(res.data);
+            })
+            .catch((error) => { console.log(error); });
          }
          setRefreshing(false);
       })
@@ -52,6 +57,18 @@ export default function WaitingInfo() {
       fetchWaitPatie();
    };
 
+   function delFirPatie() {
+      if (window.confirm('접수를 취소하시겠습니까?')) {
+            axios.delete(`http://localhost:8085/patie/delFirPatie/${patieNum}`, {withCredentials:true})
+               .then((res) => {
+                  navigate('Home');
+               })
+               .catch((error) => {console.log(error)});
+      } else {
+            alert('취소되었습니다.');
+      }
+   }
+   
    return (
       <SafeAreaView style={styles.container}>
          <ScrollView
@@ -113,7 +130,7 @@ export default function WaitingInfo() {
                </View>
          </ScrollView>
          <View style={styles.btnDiv}>
-               <TouchableOpacity style={styles.btn} onPress={() => navigate("Home")}>
+               <TouchableOpacity style={styles.btn} onPress={() => delFirPatie()}>
                   <Text style={styles.btnText}>접수 취소</Text>
                </TouchableOpacity>
          </View>

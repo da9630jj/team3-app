@@ -25,4 +25,5 @@ public interface RecService {
 
     /*예상 대기 시간*/
     int estimatedWaitTime(int partNum);
+
 }

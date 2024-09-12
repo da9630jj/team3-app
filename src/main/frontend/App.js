@@ -17,8 +17,8 @@ export default function App() {
         <Stack.Screen name="RePatientForm" component={RePatientForm}/>
         <Stack.Screen name="NewPatientForm" component={NewPatientForm}/>
         <Stack.Screen name="WaitingInfo" component={WaitingInfo}/>
-      </Stack.Navigator> */}
-      <StackNavigator />
+      </Stack.Navigator>
+      <StackNavigator /> */}
     </NavigationContainer>
   );
 }
