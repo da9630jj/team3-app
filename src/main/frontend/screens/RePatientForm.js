@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
    },
    titleTextNext: {
-      marginTop: 100,
+      marginTop: 70,
    },
    row: {
       flexDirection: 'row',
@@ -223,7 +223,8 @@ const styles = StyleSheet.create({
       borderColor: '#ddd',
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 10,
+      paddingVertical: 5,
+      paddingHorizontal: 10,
    },
    cell1: { flex: 1 },
    cell2: { flex: 3 },
