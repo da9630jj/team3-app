@@ -16,5 +16,6 @@ public class RecVO {
     private String color;
     private String personalYN;
     private PatieVO patieVO;
+    private StaffVO staffVO;
 
 }

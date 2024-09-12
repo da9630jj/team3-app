@@ -25,6 +25,7 @@ export default function NewPatientForm() {
       recDetail: '',
       partNum: '',
       staffNum: '',
+      patieNum:0
    });
    
    // 환자 정보 테이블 내용
@@ -142,7 +143,7 @@ export default function NewPatientForm() {
 
    // 진료부서 조회
    useEffect(() => {
-      axios.get(`${ex_ip}/rec/getPart`, {withCredentials: true})
+      axios.get(`http://localhost:8085/rec/getPart`, {withCredentials: true})
          .then((res) => {
             setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
          })
@@ -155,7 +156,7 @@ export default function NewPatientForm() {
    // 담당의 조회 
    useEffect(() => {
       if (formDataRec.partNum) {
-         axios.get(`${ex_ip}/rec/selectStaffName/${formDataRec.partNum}`, {withCredentials: true})
+         axios.get(`http://localhost:8085/rec/selectStaffName/${formDataRec.partNum}`,  {withCredentials: true})
          .then((res) => {
             setStaffs(res.data.map(staff => ({ label: staff.staffName, value: staff.staffNum })));
          })
@@ -175,6 +176,7 @@ export default function NewPatientForm() {
       }));
    };
 
+
    // 사전 문진 onChange 함수
    const recInputChange = (field, value) => {
       setFormDataRec(prevState => ({
@@ -182,6 +184,32 @@ export default function NewPatientForm() {
          [field]: value
       }));
    };
+
+   //환자 정보 등록 버튼 클릭 시 실행
+   function regPatie(){
+      console.log(formDataPatie)
+      axios.post(`http://localhost:8085/partie/insertPatie`, formDataPatie, {withCredentials: true})
+      .then((res) => {
+         console.log(11)
+         console.log(res.data);
+         setFormDataRec({...formDataRec, patieNum : res.data})
+      })
+      .catch((error) => {
+         alert(error);
+      });
+   }
+   
+   //작성완료 클릭 시 실행
+   function insertRec(){
+      axios.post(`http://localhost:8085/rec/insertRec`, formDataRec, {withCredentials: true})
+      .then((res) => {
+         alert('진료 접수되었습니다.');
+         navigate(`WaitingInfo`, {patieNum : formDataRec.patieNum});
+      })
+      .catch((error) => {
+         alert(error);
+      });
+   }
 
    return (
       <SafeAreaView style={styles.container}>
@@ -203,9 +231,9 @@ export default function NewPatientForm() {
             <TouchableOpacity
                style={[styles.btn, styles.btnSmall]}
                onPress={() => {
-                  // 환자 등록 함수
+                  regPatie()
                }} >
-               <Text  Text style={styles.btnText}>등록</Text>
+               <Text  Text style={styles.btnText} >등록</Text>
             </TouchableOpacity>
          </View>
          <Text style={[styles.titleText, styles.titleTextNext]}>사전 문진</Text>
@@ -241,7 +269,8 @@ export default function NewPatientForm() {
             style={styles.btn}
             onPress={() => {
                // 난중엔 등록 함수가 올 듯…
-               navigate("WaitingInfo");
+               insertRec();
+               
             }}
          >
             <Text style={styles.btnText}>작성 완료</Text>

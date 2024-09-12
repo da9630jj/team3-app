@@ -18,11 +18,13 @@
         <association property="patieVO" resultMap="patieMapper.patie" />
     </resultMap>
 
+    <!--초진 진료 작성-->
     <insert id="insertRec">
         INSERT INTO HOS_REC(REC_DATE, IS_REC, REC_STATUS, REC_DETAIL, PATIE_NUM, STAFF_NUM)
         VALUES(NOW(), 'N', '대기', #{recDetail}, #{patieNum}, #{staffNum})
     </insert>
 
+    <!--대기 현황-->
     <select id="waitPatie" resultMap="rec">
         SELECT *
         FROM HOS_REC R, HOS_STAFF S, HOS_PART A, HOS_PATIE P
@@ -30,7 +32,25 @@
         AND s.STAFF_NUM = R.STAFF_NUM
         AND A.PART_NUM = S.PART_NUM
         AND P.PATIE_NUM= #{patieNum}
-        AND REC_NUM = #{recNum};
+        AND REC_STATUS = "대기";
+    </select>
+
+    <!--각 부서 당 대기 인원-->
+    <select id="waitCount" resultType="int">
+        SELECT COUNT(*)
+        FROM HOS_REC R, HOS_STAFF S, HOS_PART A
+        WHERE R.REC_STATUS = '대기'
+        AND S.PART_NUM = A.PART_NUM
+        AND R.STAFF_NUM = S.STAFF_NUM
+        AND S.PART_NUM = #{partNum}
+    </select>
+
+    <!--예상 대기 시간-->
+    <select id="estimatedWaitTime" resultType="int">
+        SELECT COUNT(*) * 10
+        FROM HOS_REC
+        WHERE REC_STATUS = '대기'
+        AND STAFF_NUM IN (SELECT STAFF_NUM FROM HOS_STAFF WHERE PART_NUM = #{partNum})
     </select>
 	
 </mapper>

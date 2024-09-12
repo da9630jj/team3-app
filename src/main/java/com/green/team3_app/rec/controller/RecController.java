@@ -34,8 +34,20 @@ public class RecController {
         return recService.selectStaffName(partNum);}
 
     /*대기 현황*/
-    @GetMapping("waitPatie/{patieNum}/{recNum}")
-    public RecVO waitPatie(RecVO recVO){
-        return recService.waitPatie(recVO);
+    @GetMapping("waitPatie/{patieNum}")
+    public RecVO waitPatie(@PathVariable("patieNum") int patieNum){
+        return recService.waitPatie(patieNum);
+    }
+
+    /*대기 인원*/
+    @GetMapping("/waitCount/{partNum}")
+    public int waitCount(@PathVariable("partNum") int partNum){
+        return recService.waitCount(partNum);
+    }
+
+    /*예상 대기 시간*/
+    @GetMapping("/estimatedWaitTime/{partNum}")
+    public int estimatedWaitTime(@PathVariable("partNum") int partNum) {
+        return recService.estimatedWaitTime(partNum);
     }
 }

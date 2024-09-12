@@ -36,8 +36,22 @@ public class RecServiceImpl implements RecService{
     /*대기현황*/
 
     @Override
-    public RecVO waitPatie(RecVO recVO) {
-        return sqlSession.selectOne("recMapper.waitPatie", recVO);
+    public RecVO waitPatie(int patieNum) {
+        return sqlSession.selectOne("recMapper.waitPatie", patieNum);
+    }
+
+    /*대기 인원*/
+    @Override
+    public int waitCount(int partNum) {
+        Integer count = sqlSession.selectOne("recMapper.waitCount", partNum);
+        return (count != null) ? count : 0;
+    }
+
+    /*예상 대기 시간*/
+    @Override
+    public int estimatedWaitTime(int partNum) {
+        Integer waitTime = sqlSession.selectOne("recMapper.estimatedWaitTime", partNum);
+        return (waitTime != null) ? waitTime : 0;
     }
 }
 
