@@ -12,7 +12,7 @@ export default function Mypage() {
         <Text style={styles.what}>뭐라고 쓰지</Text>
       </View>
       <View style={styles.table}>
-        <TouchableOpacity style={styles.row}>
+        <TouchableOpacity style={styles.row} onPress={() => {navigate("LoginForm")}}>
           <View style={[styles.cell, styles.cell1]}>
             <Text style={[styles.cellText, styles.leftAlign]}>개인 정보 수정</Text>
           </View>
