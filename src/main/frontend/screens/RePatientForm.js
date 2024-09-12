@@ -4,6 +4,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { ex_ip } from '../external_ip';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RePatientForm() {
    const { navigate } = useNavigation();
@@ -138,7 +139,7 @@ export default function RePatientForm() {
    };
 
    return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
          <Text style={styles.titleText}>환자 정보</Text>
          {tableDataPatie.map((item, index) => (
             <View key={index} style={styles.row}>
@@ -196,7 +197,7 @@ export default function RePatientForm() {
                <Text style={styles.btnText}>작성 완료</Text>
             </TouchableOpacity>
          </View>
-      </View>
+      </SafeAreaView>
    );
 }
 
@@ -226,14 +227,15 @@ const styles = StyleSheet.create({
    },
    cell1: { flex: 1 },
    cell2: { flex: 3 },
-   text: { textAlign: 'center', fontSize: 12 },
+   text: { textAlign: 'center', fontSize: 16 },
    input: {
       width: '100%',
       textAlign: 'center',
       borderColor: 'none',
       padding: 5,
       backgroundColor: '#f1f1f1',
-      borderRadius: 3
+      borderRadius: 3,
+      fontSize:16,
    },
    inputSmall: {
       flex: 1,
@@ -278,14 +280,14 @@ const styles = StyleSheet.create({
    // 선택 상자 스타일 정의
 const pickerStyles = StyleSheet.create({
    inputIOS: {
-      fontSize: 12,
+      fontSize: 16,
       width: '100%',
       color: '#000',
       borderColor: '#000',
       padding: 10
    },
    inputAndroid: {
-      fontSize: 12,
+      fontSize: 16,
       width: '100%',
       color: '#000',
       borderRadius: 12,

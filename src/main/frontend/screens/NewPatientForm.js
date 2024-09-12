@@ -4,6 +4,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { ex_ip } from '../external_ip';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function NewPatientForm() {
    const { navigate } = useNavigation();
@@ -182,7 +183,7 @@ export default function NewPatientForm() {
    };
 
    return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
          <Text style={styles.titleText}>환자 정보</Text>
          {tableDataPatie.map((item, index) => (
          <View key={index} style={styles.row}>
@@ -245,7 +246,7 @@ export default function NewPatientForm() {
             <Text style={styles.btnText}>작성 완료</Text>
          </TouchableOpacity>
          </View>
-      </View>
+      </SafeAreaView>
    );
    }
 
@@ -275,14 +276,15 @@ export default function NewPatientForm() {
    },
    cell1: { flex: 1 },
    cell2: { flex: 3 },
-   text: { textAlign: 'center', fontSize: 12 },
+   text: { textAlign: 'center', fontSize: 16 },
    input: {
       width: '100%', // 전체 너비 사용
       textAlign: 'center',
       borderColor: 'none',
       padding: 5,
       backgroundColor: '#f1f1f1',
-      borderRadius: 3
+      borderRadius: 3,
+      fontSize: 16,
    },
    inputSmall: {
       flex: 1,

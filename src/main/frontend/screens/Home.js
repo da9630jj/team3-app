@@ -1,12 +1,13 @@
 import { StyleSheet, View, TouchableOpacity, Text, Button } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Home() {
    const {navigate} = useNavigation();
    const [isRec, setIsRec] = useState(true);
    return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
          <TouchableOpacity style={[styles.btn, styles.btn1]} onPress={() => {navigate("RePatientForm")}} >
             <Text style={[styles.btnText, styles.btnText1]}>재방문 환자 전용</Text>
          </TouchableOpacity>
@@ -25,7 +26,7 @@ export default function Home() {
             :
             null
          }
-      </View>
+      </SafeAreaView>
    )
 }
 
