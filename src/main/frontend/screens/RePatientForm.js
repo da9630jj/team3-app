@@ -1,9 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { ex_ip } from '../external_ip';
 
-// tableDataPatie 테이블 정의
+export default function RePatientForm() {
+   const { navigate } = useNavigation();
+   const [parts, setParts] = useState([]);
+   const [staffs, setStaffs] = useState([]);
+
+   // formDataPatie 정의
+   const [formDataPatie, setFormDataPatie] = useState({
+      patieName: '',
+      patieBirth: ['', '']
+   });
+
+   // formDataRec 정의
+   const [formDataRec, setFormDataRec] = useState({
+      recDetail: '',
+      partNum: 0,
+      staffNum: 0
+   });
+
+   // tableDataPatie 테이블 정의
 const tableDataPatie = [
    {
       label: '이름',
@@ -55,11 +75,7 @@ const tableDataRec = [
             placeholder={{ label: '진료부서 선택', value: '' }}
             value={value}
             onValueChange={onChange}
-            items={[
-               { label: '진료부서1', value: '진료부서1' },
-               { label: '진료부서2', value: '진료부서2' },
-               { label: '진료부서3', value: '진료부서3' },
-            ]}
+            items={parts}
             style={pickerStyles}
          />
       )
@@ -71,32 +87,39 @@ const tableDataRec = [
             placeholder={{ label: '담당의 선택', value: '' }}
             value={value}
             onValueChange={onChange}
-            items={[
-               { label: '담당의1', value: '담당의1' },
-               { label: '담당의2', value: '담당의2' },
-               { label: '담당의3', value: '담당의3' },
-            ]}
+            items={staffs}
             style={pickerStyles}
          />
       )
    }
 ];
 
-export default function RePatientForm() {
-   const { navigate } = useNavigation();
 
-   // formDataPatie 정의
-   const [formDataPatie, setFormDataPatie] = useState({
-      patieName: '',
-      patieBirth: ['', '']
-   });
+   useEffect(() => {
+      // 진료부서 조회
+      axios.get(`${ex_ip}/rec/getPart`, {withCredentials: true})
+         .then((res) => {
+            setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
+         })
+         .catch((error) => {
+            alert(error);
+         });
+      }, []);
 
-   // formDataRec 정의
-   const [formDataRec, setFormDataRec] = useState({
-      recDetail: '',
-      partName: '',
-      staffName: ''
-   });
+
+   useEffect(() => {
+      if (formDataRec.partNum) {
+         // 담당의 조회 
+         axios.get(`${ex_ip}/rec/selectStaffName/${formDataRec.partNum}`, {withCredentials: true})
+         .then((res) => {
+            setStaffs(res.data.map(staff => ({ label: staff.staffName, value: staff.staffNum })));
+            console.log(res.data);
+         })
+         .catch((error) => {
+            console.error('Error fetching staffs:', error);
+         });
+      }
+   }, [formDataRec.partNum]);
 
    // 입력 변경 처리 함수
    const patieInputChange = (field, value, index) => {
@@ -132,6 +155,15 @@ export default function RePatientForm() {
                </View>
             </View>
          ))}
+         <View style={[styles.btnDiv, styles.btnSmallDiv]}>
+            <TouchableOpacity
+               style={[styles.btn, styles.btnSmall]}
+               onPress={() => {
+                  // 환자 등록 함수
+               }} >
+               <Text  Text style={styles.btnText}>찾기</Text>
+            </TouchableOpacity>
+         </View>
          <Text style={[styles.titleText, styles.titleTextNext]}>사전 문진</Text>
          {tableDataRec.map((item, index) => (
             <View key={index} style={styles.row}>
@@ -153,8 +185,8 @@ export default function RePatientForm() {
             <Text>이름: {formDataPatie.patieName}</Text>
             <Text>주민번호: {formDataPatie.patieBirth}</Text>
             <Text>증상: {formDataRec.recDetail}</Text>
-            <Text>진료부서: {formDataRec.partName}</Text>
-            <Text>담당의: {formDataRec.staffName}</Text>
+            <Text>진료부서: {formDataRec.partNum}</Text>
+            <Text>담당의: {formDataRec.staffNum}</Text>
          </View>
          {/* --------------난중에 삭제---------------- */}
 
@@ -227,6 +259,14 @@ const styles = StyleSheet.create({
       borderRadius: 3,
       width: '100%',
       paddingVertical: 10
+   },
+   btnSmallDiv: {
+      marginLeft: 'auto',
+      marginHorizontal: 12,
+   },
+   btnSmall: {
+      backgroundColor: '#aaaaaa',
+      width: 60,
    },
    btnText: {
       textAlign: 'center',

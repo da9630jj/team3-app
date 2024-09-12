@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-nativ
 import RNPickerSelect from 'react-native-picker-select';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import { ex_ip } from '../external_ip';
 
 export default function NewPatientForm() {
    const { navigate } = useNavigation();
@@ -19,7 +20,6 @@ export default function NewPatientForm() {
       partNum: '',
       staffNum: '',
    });
-
    
    const tableDataPatie = [
       {
@@ -134,7 +134,7 @@ export default function NewPatientForm() {
 
    useEffect(() => {
       // 진료부서 조회
-      axios.get('http://localhost:8085/rec/getPart', {withCredentials: true})
+      axios.get(`${ex_ip}/rec/getPart`, {withCredentials: true})
          .then((res) => {
             setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
          })
@@ -147,7 +147,7 @@ export default function NewPatientForm() {
    useEffect(() => {
       if (formDataRec.partNum) {
          // 담당의 조회 
-         axios.get(`http://localhost:8085/rec/selectStaffName/${formDataRec.partNum}`, {withCredentials: true})
+         axios.get(`${ex_ip}/rec/selectStaffName/${formDataRec.partNum}`, {withCredentials: true})
          .then((res) => {
             setStaffs(res.data.map(staff => ({ label: staff.staffName, value: staff.staffNum })));
             console.log(res.data);
@@ -190,6 +190,15 @@ export default function NewPatientForm() {
             </View>
          </View>
          ))}
+         <View style={[styles.btnDiv, styles.btnSmallDiv]}>
+            <TouchableOpacity
+               style={[styles.btn, styles.btnSmall]}
+               onPress={() => {
+                  // 환자 등록 함수
+               }} >
+               <Text  Text style={styles.btnText}>등록</Text>
+            </TouchableOpacity>
+         </View>
          <Text style={[styles.titleText, styles.titleTextNext]}>사전 문진</Text>
          {tableDataRec.map((item, index) => (
          <View key={index} style={styles.row}>
@@ -290,6 +299,14 @@ export default function NewPatientForm() {
       borderRadius: 3,
       width: '100%',
       paddingVertical: 10
+   },
+   btnSmallDiv: {
+      marginLeft: 'auto',
+      marginHorizontal: 12,
+   },
+   btnSmall: {
+      backgroundColor: '#aaaaaa',
+      width: 60,
    },
    btnText: {
       textAlign: 'center',

@@ -1,0 +1,1 @@
+export const ex_ip = 'https://6c86-58-151-101-222.ngrok-free.app';
