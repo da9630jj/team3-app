@@ -32,5 +32,12 @@ public class RecServiceImpl implements RecService{
     public List<StaffVO> selectStaffName(int partNum) {
         return sqlSession.selectList("staffMapper.selectStaffName", partNum);
     }
+
+    /*대기현황*/
+
+    @Override
+    public RecVO waitPatie(RecVO recVO) {
+        return sqlSession.selectOne("recMapper.waitPatie", recVO);
+    }
 }
 

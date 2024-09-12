@@ -1,9 +1,20 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react'
+import { useNavigation, useRoute } from '@react-navigation/native';
+import axios from 'axios';
 
 export default function WaitingInfo() {
    const {navigate} = useNavigation();
+   const route = useRoute();
+   // const {patieNum, recNum} = route.params;
+
+   const [waitPatie, setWaitPatie] = useState({});
+
+   // useEffect(()=>{
+   //    axios.get(`/`)
+   // })
+
+
    return (
       <View style={styles.container}>
          <View>

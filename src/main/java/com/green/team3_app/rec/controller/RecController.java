@@ -32,4 +32,10 @@ public class RecController {
     @GetMapping("selectStaffName/{selectedPart}")
     public List<StaffVO> selectStaffName(@PathVariable("selectedPart") int partNum){
         return recService.selectStaffName(partNum);}
+
+    /*대기 현황*/
+    @GetMapping("waitPatie/{patieNum}/{recNum}")
+    public RecVO waitPatie(RecVO recVO){
+        return recService.waitPatie(recVO);
+    }
 }

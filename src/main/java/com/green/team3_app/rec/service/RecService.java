@@ -17,4 +17,7 @@ public interface RecService {
     /*담당의 조회*/
     List<StaffVO> selectStaffName(int partNum);
 
+    /*대기 현황*/
+    RecVO waitPatie(RecVO recVO);
+
 }

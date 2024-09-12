@@ -20,8 +20,8 @@
     </select>
 
     <insert id="insertPatie">
-        INSERT INTO HOS_PATIE(PATIE_NUM, PATIE_NAME, PATIE_TEL, PATIE_BIRTH, PATIE_ADDR, PATIE_GEN)
-        VALUES(#{patieNum}, #{patieName}, #{patieTel}, #{patieBirth}, #{patieAddr}, #{patieGen});
+        INSERT INTO HOS_PATIE(PATIE_NUM, PATIE_NAME, PATIE_TEL, PATIE_BIRTH, PATIE_ADDR)
+        VALUES(#{patieNum}, #{patieName}, #{patieTel}, #{patieBirth}, #{patieAddr});
     </insert>
 
 </mapper>

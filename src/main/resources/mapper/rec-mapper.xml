@@ -22,6 +22,16 @@
         INSERT INTO HOS_REC(REC_DATE, IS_REC, REC_STATUS, REC_DETAIL, PATIE_NUM, STAFF_NUM)
         VALUES(NOW(), 'N', '대기', #{recDetail}, #{patieNum}, #{staffNum})
     </insert>
+
+    <select id="waitPatie" resultMap="rec">
+        SELECT *
+        FROM HOS_REC R, HOS_STAFF S, HOS_PART A, HOS_PATIE P
+        WHERE P.PATIE_NUM=R.PATIE_NUM
+        AND s.STAFF_NUM = R.STAFF_NUM
+        AND A.PART_NUM = S.PART_NUM
+        AND P.PATIE_NUM= #{patieNum}
+        AND REC_NUM = #{recNum};
+    </select>
 	
 </mapper>
 

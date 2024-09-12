@@ -9,12 +9,14 @@ export default function NewPatientForm() {
    const [parts, setParts] = useState([]);
    const [staffs, setStaffs] = useState([]);
    const [formDataPatie, setFormDataPatie] = useState({
+      patieNum: 0,
       patieName: '',
       patieBirth: ['', ''],
       patieTel: ['', '', ''],
       patieAddr: ['', '']
    });
    const [formDataRec, setFormDataRec] = useState({
+      recNum: 0,
       recDetail: '',
       partNum: '',
       staffNum: ''
@@ -68,35 +70,39 @@ useEffect(() => {
    };
 
    const handleSubmit = () => {
+      
       // 필수 값이 비어 있는지 확인
       if (!formDataPatie.patieName || !formDataPatie.patieTel[0] || !formDataPatie.patieBirth[0] ||
          !formDataPatie.patieAddr[0] || !formDataRec.partNum || !formDataRec.staffNum) {
          Alert.alert('경고', '모든 필드를 입력하세요.');
          return;
       }
+      console.log(formDataPatie)
+      console.log(formDataRec)
 
       // 데이터 전송 로직
-      axios.post('/patie/insertPatie', {
+      axios.post('/partie/insertPatie', {
          ...formDataPatie,
          patieBirth: formDataPatie.patieBirth.join('-'),
          patieTel: formDataPatie.patieTel.join('-'),
          patieAddr: formDataPatie.patieAddr.join(' ')
       })
-         .then(res => {
+      .then(res => {
          const patieNum = res.data;
-         return axios.post('/rec/insertRec', {
-            ...formDataRec,
-            patieNum: patieNum,
-            recDetail: formDataRec.recDetail
-         });
-         })
-         .then(() => {
-         Alert.alert('완료', '등록되었습니다.');
-         navigate('WaitingInfo'); // Adjust this as needed for your navigation
-         })
-         .catch(error => {
-         console.error('Error submitting form:', error);
-         });
+         console.log(patieNum)
+            return axios.post('/rec/insertRec', {
+               ...formDataRec,
+               patieNum: patieNum,
+               recDetail: formDataRec.recDetail
+            });
+      })
+      .then((res) => {
+            Alert.alert('완료', '등록되었습니다.');
+            navigate('WaitingInfo');
+      })
+      .catch(error => {
+            console.error('Error submitting form:', error);
+      });
    };
 
    return (
