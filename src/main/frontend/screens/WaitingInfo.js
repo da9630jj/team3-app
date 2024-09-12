@@ -2,6 +2,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 export default function WaitingInfo() {
    const {navigate} = useNavigation();
@@ -16,7 +18,7 @@ export default function WaitingInfo() {
 
 
    return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
          <View>
             <Text style={styles.titleText}>홍길동 님의 대기 현황</Text>
             <View style={[styles.row, styles.sideAlign]}>
@@ -58,7 +60,7 @@ export default function WaitingInfo() {
                <Text style={styles.btnText}>접수 취소</Text>
             </TouchableOpacity>
          </View>
-      </View>
+      </SafeAreaView>
    )
 }
 
@@ -100,7 +102,7 @@ const styles = StyleSheet.create({
    cell1: { flex: 1 },
    cell2: { flex: 2 },
    cellText: {
-      fontSize: 12,
+      fontSize: 16,
       width: '100%',
    },
    leftAlign: {

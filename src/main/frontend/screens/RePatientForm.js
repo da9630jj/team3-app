@@ -1,104 +1,126 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { useNavigation } from '@react-navigation/native';
-
-// tableDataPatie 테이블 정의
-const tableDataPatie = [
-   {
-      label: '이름',
-      component: (value, onChange) => (
-         <TextInput
-            style={styles.input}
-            onChangeText={onChange}
-            value={value}
-         />
-      )
-   },
-   {
-      label: '주민번호',
-      component: (value, onChange) => (
-         <View style={styles.inputContainer}>
-            <TextInput
-               style={[styles.input, styles.inputSmall]}
-               onChangeText={(text) => onChange(text, 0)}
-               value={value[0]}
-            />
-            <Text style={styles.dash}>-</Text>
-            <TextInput
-               style={[styles.input, styles.inputSmall]}
-               onChangeText={(text) => onChange(text, 1)}
-               value={value[1]}
-            />
-         </View>
-      )
-   }
-];
-
-// tableDataRec 테이블 정의
-const tableDataRec = [
-   {
-      label: '증상',
-      component: (value, onChange) => (
-         <TextInput
-            style={[styles.input, styles.textArea]}
-            onChangeText={onChange}
-            value={value}
-            multiline
-         />
-      )
-   },
-   {
-      label: '진료부서',
-      component: (value, onChange) => (
-         <RNPickerSelect
-            placeholder={{ label: '진료부서 선택', value: '' }}
-            value={value}
-            onValueChange={onChange}
-            items={[
-               { label: '진료부서1', value: '진료부서1' },
-               { label: '진료부서2', value: '진료부서2' },
-               { label: '진료부서3', value: '진료부서3' },
-            ]}
-            style={pickerStyles}
-         />
-      )
-   },
-   {
-      label: '담당의',
-      component: (value, onChange) => (
-         <RNPickerSelect
-            placeholder={{ label: '담당의 선택', value: '' }}
-            value={value}
-            onValueChange={onChange}
-            items={[
-               { label: '담당의1', value: '담당의1' },
-               { label: '담당의2', value: '담당의2' },
-               { label: '담당의3', value: '담당의3' },
-            ]}
-            style={pickerStyles}
-         />
-      )
-   }
-];
+import axios from 'axios';
+import { ex_ip } from '../external_ip';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RePatientForm() {
    const { navigate } = useNavigation();
+   const [parts, setParts] = useState([]);
+   const [staffs, setStaffs] = useState([]);
 
-   // formDataPatie 정의
+   // 환자 정보 값 저장
    const [formDataPatie, setFormDataPatie] = useState({
       patieName: '',
       patieBirth: ['', '']
    });
 
-   // formDataRec 정의
+   // 사전 문진 값 저장
    const [formDataRec, setFormDataRec] = useState({
       recDetail: '',
-      partName: '',
-      staffName: ''
+      partNum: 0,
+      staffNum: 0
    });
 
-   // 입력 변경 처리 함수
+   // 환자 정보 테이블 내용
+   const tableDataPatie = [
+      {
+         label: '이름',
+         component: (value, onChange) => (
+            <TextInput
+               style={styles.input}
+               onChangeText={onChange}
+               value={value}
+            />
+         )
+      },
+      {
+         label: '주민번호',
+         component: (value, onChange) => (
+            <View style={styles.inputContainer}>
+               <TextInput
+                  style={[styles.input, styles.inputSmall]}
+                  onChangeText={(text) => onChange(text, 0)}
+                  value={value[0]}
+               />
+               <Text style={styles.dash}>-</Text>
+               <TextInput
+                  style={[styles.input, styles.inputSmall]}
+                  onChangeText={(text) => onChange(text, 1)}
+                  value={value[1]}
+               />
+            </View>
+         )
+      }
+   ];
+
+   // 사전 문진 테이블 내용
+   const tableDataRec = [
+      {
+         label: '증상',
+         component: (value, onChange) => (
+            <TextInput
+               style={[styles.input, styles.textArea]}
+               onChangeText={onChange}
+               value={value}
+               multiline
+            />
+         )
+      },
+      {
+         label: '진료부서',
+         component: (value, onChange) => (
+            <RNPickerSelect
+               placeholder={{ label: '진료부서 선택', value: '' }}
+               value={value}
+               onValueChange={onChange}
+               items={parts}
+               style={pickerStyles}
+            />
+         )
+      },
+      {
+         label: '담당의',
+         component: (value, onChange) => (
+            <RNPickerSelect
+               placeholder={{ label: '담당의 선택', value: '' }}
+               value={value}
+               onValueChange={onChange}
+               items={staffs}
+               style={pickerStyles}
+            />
+         )
+      }
+   ];
+
+   // 진료부서 조회
+   useEffect(() => {
+      axios.get(`${ex_ip}/rec/getPart`, {withCredentials: true})
+         .then((res) => {
+            setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
+         })
+         .catch((error) => {
+            alert(error);
+         });
+      }, []);
+
+
+   // 담당의 조회 
+   useEffect(() => {
+      if (formDataRec.partNum) {
+         axios.get(`${ex_ip}/rec/selectStaffName/${formDataRec.partNum}`, {withCredentials: true})
+         .then((res) => {
+            setStaffs(res.data.map(staff => ({ label: staff.staffName, value: staff.staffNum })));
+         })
+         .catch((error) => {
+            alert(error);
+         });
+      }
+   }, [formDataRec.partNum]);
+
+   // 환자 정보 onChange 함수
    const patieInputChange = (field, value, index) => {
       setFormDataPatie(prevState => ({
          ...prevState,
@@ -108,7 +130,7 @@ export default function RePatientForm() {
       }));
    };
 
-   // 사전 문진 입력 변경 처리 함수
+   // 사전 문진 onChange 함수
    const recInputChange = (field, value) => {
       setFormDataRec(prevState => ({
          ...prevState,
@@ -117,7 +139,7 @@ export default function RePatientForm() {
    };
 
    return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
          <Text style={styles.titleText}>환자 정보</Text>
          {tableDataPatie.map((item, index) => (
             <View key={index} style={styles.row}>
@@ -132,6 +154,15 @@ export default function RePatientForm() {
                </View>
             </View>
          ))}
+         <View style={[styles.btnDiv, styles.btnSmallDiv]}>
+            <TouchableOpacity
+               style={[styles.btn, styles.btnSmall]}
+               onPress={() => {
+                  // 환자 등록 함수
+               }} >
+               <Text  Text style={styles.btnText}>찾기</Text>
+            </TouchableOpacity>
+         </View>
          <Text style={[styles.titleText, styles.titleTextNext]}>사전 문진</Text>
          {tableDataRec.map((item, index) => (
             <View key={index} style={styles.row}>
@@ -153,8 +184,8 @@ export default function RePatientForm() {
             <Text>이름: {formDataPatie.patieName}</Text>
             <Text>주민번호: {formDataPatie.patieBirth}</Text>
             <Text>증상: {formDataRec.recDetail}</Text>
-            <Text>진료부서: {formDataRec.partName}</Text>
-            <Text>담당의: {formDataRec.staffName}</Text>
+            <Text>진료부서: {formDataRec.partNum}</Text>
+            <Text>담당의: {formDataRec.staffNum}</Text>
          </View>
          {/* --------------난중에 삭제---------------- */}
 
@@ -166,7 +197,7 @@ export default function RePatientForm() {
                <Text style={styles.btnText}>작성 완료</Text>
             </TouchableOpacity>
          </View>
-      </View>
+      </SafeAreaView>
    );
 }
 
@@ -196,14 +227,15 @@ const styles = StyleSheet.create({
    },
    cell1: { flex: 1 },
    cell2: { flex: 3 },
-   text: { textAlign: 'center', fontSize: 12 },
+   text: { textAlign: 'center', fontSize: 16 },
    input: {
       width: '100%',
       textAlign: 'center',
       borderColor: 'none',
       padding: 5,
       backgroundColor: '#f1f1f1',
-      borderRadius: 3
+      borderRadius: 3,
+      fontSize:16,
    },
    inputSmall: {
       flex: 1,
@@ -228,6 +260,14 @@ const styles = StyleSheet.create({
       width: '100%',
       paddingVertical: 10
    },
+   btnSmallDiv: {
+      marginLeft: 'auto',
+      marginHorizontal: 12,
+   },
+   btnSmall: {
+      backgroundColor: '#aaaaaa',
+      width: 60,
+   },
    btnText: {
       textAlign: 'center',
       fontWeight: 'bold',
@@ -237,16 +277,17 @@ const styles = StyleSheet.create({
    }
 });
 
+   // 선택 상자 스타일 정의
 const pickerStyles = StyleSheet.create({
    inputIOS: {
-      fontSize: 12,
+      fontSize: 16,
       width: '100%',
       color: '#000',
       borderColor: '#000',
       padding: 10
    },
    inputAndroid: {
-      fontSize: 12,
+      fontSize: 16,
       width: '100%',
       color: '#000',
       borderRadius: 12,
