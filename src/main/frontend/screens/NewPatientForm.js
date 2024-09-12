@@ -9,18 +9,23 @@ export default function NewPatientForm() {
    const { navigate } = useNavigation();
    const [parts, setParts] = useState([]);
    const [staffs, setStaffs] = useState([]);
+
+   // 환자 정보 값 저장
    const [formDataPatie, setFormDataPatie] = useState({
       patieName: '',
       patieBirth: ['', ''],
       patieTel: ['', '', ''],
       patieAddr: ['', '']
    });
+
+   // 사전 문진 값 저장
    const [formDataRec, setFormDataRec] = useState({
       recDetail: '',
       partNum: '',
       staffNum: '',
    });
    
+   // 환자 정보 테이블 내용
    const tableDataPatie = [
       {
          label: '이름',
@@ -94,6 +99,7 @@ export default function NewPatientForm() {
       }
    ];
 
+   // 사전 문진 테이블 내용
    const tableDataRec = [
       {
          label: '증상',
@@ -132,8 +138,8 @@ export default function NewPatientForm() {
       }
    ];
 
+   // 진료부서 조회
    useEffect(() => {
-      // 진료부서 조회
       axios.get(`${ex_ip}/rec/getPart`, {withCredentials: true})
          .then((res) => {
             setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
@@ -144,20 +150,20 @@ export default function NewPatientForm() {
       }, []);
 
 
+   // 담당의 조회 
    useEffect(() => {
       if (formDataRec.partNum) {
-         // 담당의 조회 
          axios.get(`${ex_ip}/rec/selectStaffName/${formDataRec.partNum}`, {withCredentials: true})
          .then((res) => {
             setStaffs(res.data.map(staff => ({ label: staff.staffName, value: staff.staffNum })));
-            console.log(res.data);
          })
          .catch((error) => {
-            console.error('Error fetching staffs:', error);
+            alert(error);
          });
       }
    }, [formDataRec.partNum]);
 
+   // 환자 정보 onChange 함수
    const patieInputChange = (field, value, index) => {
       setFormDataPatie(prevState => ({
          ...prevState,
@@ -167,6 +173,7 @@ export default function NewPatientForm() {
       }));
    };
 
+   // 사전 문진 onChange 함수
    const recInputChange = (field, value) => {
       setFormDataRec(prevState => ({
          ...prevState,
@@ -317,6 +324,7 @@ export default function NewPatientForm() {
    }
    });
 
+   // 선택 상자 스타일 정의
    const pickerStyles = StyleSheet.create({
    inputIOS: {
       fontSize: 12,
