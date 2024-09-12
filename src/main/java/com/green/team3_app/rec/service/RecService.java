@@ -18,6 +18,11 @@ public interface RecService {
     List<StaffVO> selectStaffName(int partNum);
 
     /*대기 현황*/
-    RecVO waitPatie(RecVO recVO);
+    RecVO waitPatie(int patieNum);
 
+    /*부서별 대기 인원*/
+    int waitCount(int partNum);
+
+    /*예상 대기 시간*/
+    int estimatedWaitTime(int partNum);
 }

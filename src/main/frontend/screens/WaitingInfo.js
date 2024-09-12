@@ -1,67 +1,124 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-
 export default function WaitingInfo() {
-   const {navigate} = useNavigation();
    const route = useRoute();
-   // const {patieNum, recNum} = route.params;
+   const { patieNum } = route.params;
+   const { navigate } = useNavigation();
 
    const [waitPatie, setWaitPatie] = useState({});
+   const [waitCount, setWaitCount] = useState(0); 
+   const [estimatedWaitTime, setEstimatedWaitTime] = useState(0); 
+   const [refreshing, setRefreshing] = useState(false);
 
-   // useEffect(()=>{
-   //    axios.get(`/`)
-   // })
+   useEffect(() => {
+      fetchWaitPatie();
+   }, [patieNum]);
 
+   const fetchWaitPatie = () => {
+      axios.get(`http://localhost:8085/rec/waitPatie/${patieNum}`, { withCredentials: true })
+      .then((res) => {
+         console.log(res.data);
+         setWaitPatie(res.data);
+         const partNum = res.data.staffVO.part?.partNum;
+         if (partNum) {
+               axios.get(`http://localhost:8085/rec/waitCount/${partNum}`, { withCredentials: true })
+               .then((res) => {
+                  console.log(res.data);
+                  setWaitCount(res.data);
+               })
+               .catch((error) => { console.log(error); });
+
+               axios.get(`http://localhost:8085/rec/estimatedWaitTime/${partNum}`, { withCredentials: true })
+               .then((res) => {
+                  console.log(res.data);
+                  setEstimatedWaitTime(res.data);
+               })
+               .catch((error) => { console.log(error); });
+         }
+         setRefreshing(false);
+      })
+      .catch((error) => {
+         alert('대기 현황을 가져오는 중 오류가 발생했습니다.');
+         setRefreshing(false);
+      });
+   };
+
+   const onRefresh = () => {
+      setRefreshing(true);
+      fetchWaitPatie();
+   };
 
    return (
       <SafeAreaView style={styles.container}>
-         <View>
-            <Text style={styles.titleText}>홍길동 님의 대기 현황</Text>
-            <View style={[styles.row, styles.sideAlign]}>
-               <Text style={styles.waitingNum}>001번</Text>
-               <Text>새로고침</Text>
-            </View>
-         </View>
-         <View>
-            <View style={styles.table}>
-               {/* 첫 번째 행 */}
-               <View style={styles.row}>
-                  <View style={[styles.cell, styles.cell1]}><Text style={[styles.cellText, styles.leftAlign]}>진료과</Text></View>
-                  <View style={[styles.cell, styles.cell2]}><Text style={[styles.cellText, styles.rightAlign]}>XX과</Text></View>
+         <ScrollView
+               contentContainerStyle={styles.scrollViewContent}
+               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+         >
+               <View style={styles.content}>
+                  <Text style={styles.titleText}>{waitPatie.patieVO?.patieName || '정보 없음'} 님의 대기 현황</Text>
+                  <View style={[styles.row, styles.sideAlign]}>
+                     <Text style={styles.waitingNum}>{waitPatie.recNum || '정보 없음'}번</Text>
+                     <TouchableOpacity onPress={onRefresh}>
+                           <Text>새로고침</Text>
+                     </TouchableOpacity>
+                  </View>
+                  <View>
+                     <View style={styles.table}>
+                           {/* 첫 번째 행 */}
+                           <View style={styles.row}>
+                              <View style={[styles.cell, styles.cell1]}>
+                                 <Text style={[styles.cellText, styles.leftAlign]}>진료과</Text>
+                              </View>
+                              <View style={[styles.cell, styles.cell2]}>
+                                 <Text style={[styles.cellText, styles.rightAlign]}>
+                                       {waitPatie.staffVO?.part?.partName || '정보 없음'}
+                                 </Text>
+                              </View>
+                           </View>
+
+                           {/* 두 번째 행 */}
+                           <View style={styles.row}>
+                              <View style={[styles.cell, styles.cell1]}>
+                                 <Text style={[styles.cellText, styles.leftAlign]}>대기인원</Text>
+                              </View>
+                              <View style={[styles.cell, styles.cell2]}>
+                                 <Text style={[styles.cellText, styles.rightAlign]}>
+                                       {waitCount || '정보 없음'}명
+                                 </Text>
+                              </View>
+                           </View>
+
+                           {/* 세 번째 행 */}
+                           <View style={styles.row}>
+                              <View style={[styles.cell, styles.cell1]}>
+                                 <Text style={[styles.cellText, styles.leftAlign]}>예상 대기 시간</Text>
+                              </View>
+                              <View style={[styles.cell, styles.cell2]}>
+                                 <Text style={[styles.cellText, styles.rightAlign]}>
+                                       {estimatedWaitTime || '정보 없음'}분
+                                 </Text>
+                              </View>
+                           </View>
+                     </View>
+                  </View>
+                  <View style={styles.noDiv}>
+                     <Text style={styles.noText}>먼가 더 쓸 게 생기겠지요...</Text>
+                     <Text style={styles.noText}>먼가 더 쓸 게 생기겠지요...</Text>
+                     <Text style={styles.noText}>먼가 더 쓸 게 생기겠지요...</Text>
+                  </View>
                </View>
-               
-               {/* 두 번째 행 */}
-               <View style={styles.row}>
-                  <View style={[styles.cell, styles.cell1]}><Text style={[styles.cellText, styles.leftAlign]}>대기인원</Text></View>
-                  <View style={[styles.cell, styles.cell2]}><Text style={[styles.cellText, styles.rightAlign]}>00번째</Text></View>
-               </View>
-               
-               {/* 세 번째 행 */}
-               <View style={styles.row}>
-                  <View style={[styles.cell, styles.cell1]}><Text style={[styles.cellText, styles.leftAlign]}>예상 대기 시간</Text></View>
-                  <View style={[styles.cell, styles.cell2]}><Text style={[styles.cellText, styles.rightAlign]}>0시간 00분</Text></View>
-               </View>
-            </View>
-         </View>
-         <View style={styles.noDiv}>
-            <Text style={styles.noText}>먼가 더 쓸 게 생기겠지요...</Text>
-            <Text style={styles.noText}>먼가 더 쓸 게 생기겠지요...</Text>
-            <Text style={styles.noText}>먼가 더 쓸 게 생기겠지요...</Text>
-         </View>
-         <View style={[styles.btnDiv, styles.bottomDiv]}>
-            <TouchableOpacity style={styles.btn} onPress={() => {
-               /* 난중엔 등록 함수가 올 듯… */
-               navigate("Home")
-               }} >
-               <Text style={styles.btnText}>접수 취소</Text>
-            </TouchableOpacity>
+         </ScrollView>
+         <View style={styles.btnDiv}>
+               <TouchableOpacity style={styles.btn} onPress={() => navigate("Home")}>
+                  <Text style={styles.btnText}>접수 취소</Text>
+               </TouchableOpacity>
          </View>
       </SafeAreaView>
-   )
+   );
 }
 
 const styles = StyleSheet.create({
