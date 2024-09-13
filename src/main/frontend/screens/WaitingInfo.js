@@ -208,4 +208,4 @@ const styles = StyleSheet.create({
    noText: {
       paddingVertical: 5,
    }
-});
+})};
