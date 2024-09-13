@@ -7,7 +7,7 @@ import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/partie")
+@RequestMapping("/patie")
 public class PatieController {
     @Resource(name = "patieService")
     private PatieService patieService;

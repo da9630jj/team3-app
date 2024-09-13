@@ -211,7 +211,7 @@ export default function NewPatientForm() {
    //환자 정보 등록 버튼 클릭 시 실행
    function regPatie(){
       console.log(formDataPatie)
-      axios.post(`http://localhost:8085/partie/insertPatie`, formDataPatie, {withCredentials: true})
+      axios.post(`http://localhost:8085/patie/insertPatie`, formDataPatie, {withCredentials: true})
       .then((res) => {
          console.log(11)
          console.log(res.data);
