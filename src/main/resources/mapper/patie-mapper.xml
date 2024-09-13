@@ -22,14 +22,23 @@
     <!--초진 환자 등록-->
     <insert id="insertPatie">
         INSERT INTO HOS_PATIE(PATIE_NUM, PATIE_NAME, PATIE_TEL, PATIE_BIRTH, PATIE_ADDR, PATIE_GEN)
-        VALUES(#{patieNum}, #{patieName}, #{patieTel}, #{patieBirth}, #{patieAddr}, 'F');
+        VALUES(#{patieNum}, #{patieName}, #{patieTel}, #{patieBirth}, #{patieAddr}, #{patieGen});
     </insert>
+
 
     <!--초진 환자 접수 취소-->
     <delete id="delFirPatie">
         DELETE FROM HOS_PATIE
         WHERE PATIE_NUM = #{patieNum};
     </delete>
+    
+    <!--재진 환자 찾기-->
+    <select id="findRePatie" resultMap="patie">
+        SELECT PATIE_BIRTH, PATIE_NUM, PATIE_NAME
+        FROM HOS_PATIE
+        WHERE PATIE_BIRTH = #{patieBirth}
+        AND PATIE_NAME = #{patieName};
+    </select>
 
 </mapper>
 

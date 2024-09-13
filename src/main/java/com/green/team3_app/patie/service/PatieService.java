@@ -15,6 +15,8 @@ public interface PatieService {
     /*초진 환자 접수 취소*/
     void delFirPatie(int patieNum);
 
+    /*재진 환자 정보 찾기*/
+    List<PatieVO> findRePatie(PatieVO patieVO);
 
 
 }

@@ -3,12 +3,20 @@ import { View, Text, StyleSheet, TouchableOpacity, RefreshControl, ScrollView } 
 import { useRoute, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Home from './Home';
 
 export default function WaitingInfo() {
    const route = useRoute();
-   const { patieNum } = route.params;
    const { navigate } = useNavigation();
+
+   const { patieNum } = route.params; 
+
+   if (patieNum === undefined) {
+      return (
+         <SafeAreaView style={styles.container}>
+            <Text style={styles.errorText}>환자 번호가 누락되었습니다</Text>
+         </SafeAreaView>
+      );
+   }
 
    const [waitPatie, setWaitPatie] = useState({});
    const [waitCount, setWaitCount] = useState(0); 
@@ -20,7 +28,7 @@ export default function WaitingInfo() {
    }, [patieNum]);
 
    const fetchWaitPatie = () => {
-      // 기본 대기 정보 
+      // 기본 대기 정보
       axios.get(`http://localhost:8085/rec/waitPatie/${patieNum}`, { withCredentials: true })
       .then((res) => {
          console.log(res.data);
@@ -60,14 +68,15 @@ export default function WaitingInfo() {
    // 접수 취소
    function delFirPatie() {
       if (window.confirm('접수를 취소하시겠습니까?')) {
-            axios.delete(`http://localhost:8085/patie/delFirPatie/${patieNum}`, {withCredentials:true})
+            axios.delete(`http://localhost:8085/patie/delFirPatie/${patieNum}`, { withCredentials: true })
                .then((res) => {
-                  alert('접수가 취소되었습니다.')
+                  alert('접수가 취소되었습니다.');
                   navigate('Home');
                })
-               .catch((error) => {console.log(error)});
+               .catch((error) => { console.log(error); });
       } 
-   
+   }
+
    return (
       <SafeAreaView style={styles.container}>
          <ScrollView
@@ -208,4 +217,4 @@ const styles = StyleSheet.create({
    noText: {
       paddingVertical: 5,
    }
-})};
+});

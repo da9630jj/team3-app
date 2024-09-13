@@ -10,6 +10,8 @@ export default function RePatientForm() {
    const { navigate } = useNavigation();
    const [parts, setParts] = useState([]);
    const [staffs, setStaffs] = useState([]);
+   const [findPatie, setFindPatie] = useState([])
+   const [isFind, setIsFind]=useState(false);
 
    // 환자 정보 값 저장
    const [formDataPatie, setFormDataPatie] = useState({
@@ -21,7 +23,8 @@ export default function RePatientForm() {
    const [formDataRec, setFormDataRec] = useState({
       recDetail: '',
       partNum: 0,
-      staffNum: 0
+      staffNum: 0,
+      patieNum:0
    });
 
    // 환자 정보 테이블 내용
@@ -97,7 +100,7 @@ export default function RePatientForm() {
 
    // 진료부서 조회
    useEffect(() => {
-      axios.get(`${ex_ip}/rec/getPart`, {withCredentials: true})
+      axios.get(`http://localhost:8085/rec/getPart`, {withCredentials: true})
          .then((res) => {
             setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
          })
@@ -110,7 +113,7 @@ export default function RePatientForm() {
    // 담당의 조회 
    useEffect(() => {
       if (formDataRec.partNum) {
-         axios.get(`${ex_ip}/rec/selectStaffName/${formDataRec.partNum}`, {withCredentials: true})
+         axios.get(`http://localhost:8085/rec/selectStaffName/${formDataRec.partNum}`, {withCredentials: true})
          .then((res) => {
             setStaffs(res.data.map(staff => ({ label: staff.staffName, value: staff.staffNum })));
          })
@@ -130,6 +133,60 @@ export default function RePatientForm() {
       }));
    };
 
+   function findOnClick() {
+      findRePatie(); 
+   }
+   
+   function findRePatie() {
+      const patieBirth = formDataPatie.patieBirth.join('-');
+      axios.get('http://localhost:8085/patie/findRePatie', {
+        params: {
+          patieName: formDataPatie.patieName,
+          patieBirth: patieBirth
+        },
+        withCredentials: true
+      })
+      .then((res) => {
+        if (res.data.length > 0) {
+          setFindPatie(res.data);
+          const [foundPatie] = res.data;
+          const patieBirth = formDataPatie.patieBirth.join('-');
+   
+          if (foundPatie.patieName === formDataPatie.patieName && foundPatie.patieBirth === patieBirth) {
+            alert(`${foundPatie.patieName}님 확인 되었습니다.`);
+            setFormDataRec({...formDataRec, patieNum: foundPatie.patieNum}); // 수정된 부분
+          } else {
+            alert('환자 정보가 없습니다.');
+          }
+        } else {
+          alert('환자 정보가 없습니다.');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        alert('정보 조회에 실패했습니다.');
+      });
+   }
+   
+
+   // 환자 정보 찾기 버튼 클릭시
+   function findOnClick() {
+      findRePatie(); 
+      if (findPatie.length > 0) {
+         const [foundPatie] = findPatie;
+         const patieBirth = formDataPatie.patieBirth.join('-');
+
+         if (foundPatie.patieName === formDataPatie.patieName && foundPatie.patieBirth === patieBirth) {
+            alert(`${foundPatie.patieName}님 확인 되었습니다.`);
+            setFormDataRec({...formDataRec, patieNum : res.data})
+         } else {
+            alert('환자 정보가 없습니다.');
+         }
+      } else {
+         alert('환자 정보가 없습니다.');
+      }
+   }
+
    // 사전 문진 onChange 함수
    const recInputChange = (field, value) => {
       setFormDataRec(prevState => ({
@@ -138,6 +195,19 @@ export default function RePatientForm() {
       }));
    };
 
+   //작성완료 클릭 시 실행
+   function insertRec() {
+      axios.post(`http://localhost:8085/rec/insertRec`, formDataRec, {withCredentials: true})
+      .then((res) => {
+         alert('진료 접수되었습니다.');
+         console.log(formDataRec.patieNum)
+         navigate('WaitingInfo', { patieNum: formDataRec.patieNum });
+      })
+      .catch((error) => {
+         alert(error);
+      });
+   }
+   
    return (
       <SafeAreaView style={styles.container}>
          <Text style={styles.titleText}>환자 정보</Text>
@@ -158,6 +228,7 @@ export default function RePatientForm() {
             <TouchableOpacity
                style={[styles.btn, styles.btnSmall]}
                onPress={() => {
+                  findOnClick();
                   // 환자 등록 함수
                }} >
                <Text  Text style={styles.btnText}>찾기</Text>
@@ -192,7 +263,9 @@ export default function RePatientForm() {
          <View style={[styles.btnDiv, styles.bottomDiv]}>
             <TouchableOpacity
                style={styles.btn}
-               onPress={() => navigate("WaitingInfo")}
+               onPress={() => {
+                  insertRec()
+               }}
             >
                <Text style={styles.btnText}>작성 완료</Text>
             </TouchableOpacity>

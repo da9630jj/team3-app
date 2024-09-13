@@ -16,7 +16,7 @@ public class RecController {
     @Resource(name = "recService")
     private RecService recService;
 
-    /*초진 환자 전용*/
+    /*진료 작성*/
     @PostMapping("/insertRec")
     void insertRec(@RequestBody RecVO recVO) {
         recService.insertRec(recVO);
@@ -50,4 +50,5 @@ public class RecController {
     public int estimatedWaitTime(@PathVariable("partNum") int partNum) {
         return recService.estimatedWaitTime(partNum);
     }
+
 }

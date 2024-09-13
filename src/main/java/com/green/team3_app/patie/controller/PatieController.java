@@ -6,6 +6,8 @@ import com.green.team3_app.patie.vo.ReceivePatieVO;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/patie")
 public class PatieController {
@@ -26,6 +28,7 @@ public class PatieController {
         patieVO.setPatieAddr(receivePatieVO.getPatieAddr().get(0) + " " + receivePatieVO.getPatieAddr().get(1));
         patieVO.setPatieTel(receivePatieVO.getPatieTel().get(0) + "-" + receivePatieVO.getPatieTel().get(1) + "-" + receivePatieVO.getPatieTel().get(2));
         patieVO.setPatieName(receivePatieVO.getPatieName());
+        patieVO.setPatieGen(receivePatieVO.getPatieGen());
 
         patieService.insertPatie(patieVO);
 
@@ -36,5 +39,16 @@ public class PatieController {
     @DeleteMapping("/delFirPatie/{patieNum}")
     public void delFirPatie(@PathVariable("patieNum") int patieNum){
         patieService.delFirPatie(patieNum);
+    }
+
+    /*재진 환자 정보 찾기*/
+    @GetMapping("/findRePatie")
+    public List<PatieVO> findRePatie(
+            @RequestParam("patieName") String patieName,
+            @RequestParam("patieBirth") String patieBirth) {
+        PatieVO patieVO = new PatieVO();
+        patieVO.setPatieName(patieName);
+        patieVO.setPatieBirth(patieBirth);
+        return patieService.findRePatie(patieVO);
     }
 }

@@ -25,7 +25,7 @@ export default function NewPatientForm() {
    // 사전 문진 값 저장
    const [formDataRec, setFormDataRec] = useState({
       recDetail: '',
-      partNum: '',
+      partNum: 0,
       staffNum: '',
       patieNum:0
    });
@@ -213,7 +213,6 @@ export default function NewPatientForm() {
       console.log(formDataPatie)
       axios.post(`http://localhost:8085/patie/insertPatie`, formDataPatie, {withCredentials: true})
       .then((res) => {
-         console.log(11)
          console.log(res.data);
          setFormDataRec({...formDataRec, patieNum : res.data})
       })

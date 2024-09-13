@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 public class ReceivePatieVO {
     private String patieName;
+    private String patieGen;
     private List<String> patieBirth;
     private List<String> patieTel;
     private List<String> patieAddr;

@@ -24,9 +24,14 @@ public class PatieServiceImpl implements PatieService {
     }
 
     /*초진 환자 접수 취소*/
-
     @Override
     public void delFirPatie(int patieNum) {
         sqlSession.delete("patieMapper.delFirPatie", patieNum);
+    }
+
+    /*재진 환자 찾기*/
+    @Override
+    public List<PatieVO> findRePatie(PatieVO patieVO) {
+        return sqlSession.selectList("patieMapper.findRePatie", patieVO);
     }
 }

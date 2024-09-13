@@ -18,7 +18,7 @@
         <association property="patieVO" resultMap="patieMapper.patie" />
     </resultMap>
 
-    <!--초진 진료 작성-->
+    <!--진료 작성-->
     <insert id="insertRec">
         INSERT INTO HOS_REC(REC_DATE, IS_REC, REC_STATUS, REC_DETAIL, PATIE_NUM, STAFF_NUM)
         VALUES(NOW(), 'N', '대기', #{recDetail}, #{patieNum}, #{staffNum})
