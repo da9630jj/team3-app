@@ -10,8 +10,8 @@ export default function RePatientForm() {
    const { navigate } = useNavigation();
    const [parts, setParts] = useState([]);
    const [staffs, setStaffs] = useState([]);
-   const [findPatie, setFindPatie] = useState([])
-   const [isFind, setIsFind]=useState(false);
+   const [findPatie, setFindPatie] = useState([]);
+   const [isPatientFound, setIsPatientFound] = useState(false);
 
    // 환자 정보 값 저장
    const [formDataPatie, setFormDataPatie] = useState({
@@ -24,7 +24,7 @@ export default function RePatientForm() {
       recDetail: '',
       partNum: 0,
       staffNum: 0,
-      patieNum:0
+      patieNum: 0
    });
 
    // 환자 정보 테이블 내용
@@ -107,8 +107,7 @@ export default function RePatientForm() {
          .catch((error) => {
             alert(error);
          });
-      }, []);
-
+   }, []);
 
    // 담당의 조회 
    useEffect(() => {
@@ -133,58 +132,40 @@ export default function RePatientForm() {
       }));
    };
 
-   function findOnClick() {
-      findRePatie(); 
-   }
-   
+   // 환자 찾기
    function findRePatie() {
       const patieBirth = formDataPatie.patieBirth.join('-');
       axios.get('http://localhost:8085/patie/findRePatie', {
-        params: {
-          patieName: formDataPatie.patieName,
-          patieBirth: patieBirth
-        },
-        withCredentials: true
+         params: {
+            patieName: formDataPatie.patieName,
+            patieBirth: patieBirth
+         },
+         withCredentials: true
       })
       .then((res) => {
-        if (res.data.length > 0) {
-          setFindPatie(res.data);
-          const [foundPatie] = res.data;
-          const patieBirth = formDataPatie.patieBirth.join('-');
-   
-          if (foundPatie.patieName === formDataPatie.patieName && foundPatie.patieBirth === patieBirth) {
-            alert(`${foundPatie.patieName}님 확인 되었습니다.`);
-            setFormDataRec({...formDataRec, patieNum: foundPatie.patieNum}); // 수정된 부분
-          } else {
-            alert('환자 정보가 없습니다.');
-          }
-        } else {
-          alert('환자 정보가 없습니다.');
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        alert('정보 조회에 실패했습니다.');
-      });
-   }
-   
-
-   // 환자 정보 찾기 버튼 클릭시
-   function findOnClick() {
-      findRePatie(); 
-      if (findPatie.length > 0) {
-         const [foundPatie] = findPatie;
-         const patieBirth = formDataPatie.patieBirth.join('-');
-
-         if (foundPatie.patieName === formDataPatie.patieName && foundPatie.patieBirth === patieBirth) {
-            alert(`${foundPatie.patieName}님 확인 되었습니다.`);
-            setFormDataRec({...formDataRec, patieNum : res.data})
+         if (res.data.length > 0) {
+            setFindPatie(res.data);
+            const [foundPatie] = res.data;
+            const patieBirth = formDataPatie.patieBirth.join('-');
+            
+            if (foundPatie.patieName === formDataPatie.patieName && foundPatie.patieBirth === patieBirth) {
+               alert(`${foundPatie.patieName}님 확인 되었습니다.`);
+               setIsPatientFound(true); 
+               setFormDataRec({...formDataRec, patieNum: foundPatie.patieNum});
+            } else {
+               alert('환자 정보가 없습니다.');
+               setIsPatientFound(false); 
+            }
          } else {
             alert('환자 정보가 없습니다.');
+            setIsPatientFound(false); 
          }
-      } else {
-         alert('환자 정보가 없습니다.');
-      }
+      })
+      .catch((error) => {
+         console.log(error);
+         alert('정보 조회에 실패했습니다.');
+         setIsPatientFound(false); 
+      });
    }
 
    // 사전 문진 onChange 함수
@@ -197,10 +178,18 @@ export default function RePatientForm() {
 
    //작성완료 클릭 시 실행
    function insertRec() {
+      if (!isPatientFound) {
+         alert('환자 정보를 먼저 확인해 주세요.');
+         return;
+      }
+      if (!formDataRec.recDetail || !formDataRec.partNum || !formDataRec.staffNum) {
+         alert( '모든 필수 필드를 입력해주세요.');
+         return;
+      }
+
       axios.post(`http://localhost:8085/rec/insertRec`, formDataRec, {withCredentials: true})
       .then((res) => {
-         alert('진료 접수되었습니다.');
-         console.log(formDataRec.patieNum)
+         alert('진료가 접수되었습니다.');
          navigate('WaitingInfo', { patieNum: formDataRec.patieNum });
       })
       .catch((error) => {
@@ -228,10 +217,9 @@ export default function RePatientForm() {
             <TouchableOpacity
                style={[styles.btn, styles.btnSmall]}
                onPress={() => {
-                  findOnClick();
-                  // 환자 등록 함수
+                  findRePatie();
                }} >
-               <Text  Text style={styles.btnText}>찾기</Text>
+               <Text style={styles.btnText}>찾기</Text>
             </TouchableOpacity>
          </View>
          <Text style={[styles.titleText, styles.titleTextNext]}>사전 문진</Text>
@@ -247,7 +235,8 @@ export default function RePatientForm() {
                   )}
                </View>
             </View>
-         ))}
+         ))
+}
 
          {/* --------------난중에 삭제--------------- */}
          <View>

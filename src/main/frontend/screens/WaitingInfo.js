@@ -68,7 +68,7 @@ export default function WaitingInfo() {
    // 접수 취소
    function delFirPatie() {
       if (window.confirm('접수를 취소하시겠습니까?')) {
-            axios.delete(`http://localhost:8085/patie/delFirPatie/${patieNum}`, { withCredentials: true })
+            axios.delete(`http://localhost:8085/rec/delRec/${waitPatie.recNum}`, { withCredentials: true })
                .then((res) => {
                   alert('접수가 취소되었습니다.');
                   navigate('Home');

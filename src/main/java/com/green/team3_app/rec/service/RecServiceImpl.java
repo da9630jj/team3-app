@@ -34,7 +34,6 @@ public class RecServiceImpl implements RecService{
     }
 
     /*대기현황*/
-
     @Override
     public RecVO waitPatie(int patieNum) {
         return sqlSession.selectOne("recMapper.waitPatie", patieNum);
@@ -52,6 +51,12 @@ public class RecServiceImpl implements RecService{
     public int estimatedWaitTime(int partNum) {
         Integer waitTime = sqlSession.selectOne("recMapper.estimatedWaitTime", partNum);
         return (waitTime != null) ? waitTime : 0;
+    }
+
+    /*환자 접수 취소*/
+    @Override
+    public void delRec(int recNum) {
+        sqlSession.delete("recMapper.delRec", recNum);
     }
 }
 

@@ -35,12 +35,6 @@ public class PatieController {
         return patieNum;
     }
 
-    /*초진 환자 접수 취소*/
-    @DeleteMapping("/delFirPatie/{patieNum}")
-    public void delFirPatie(@PathVariable("patieNum") int patieNum){
-        patieService.delFirPatie(patieNum);
-    }
-
     /*재진 환자 정보 찾기*/
     @GetMapping("/findRePatie")
     public List<PatieVO> findRePatie(

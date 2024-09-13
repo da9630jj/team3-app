@@ -53,6 +53,12 @@
         AND STAFF_NUM IN (SELECT STAFF_NUM FROM HOS_STAFF WHERE PART_NUM = #{partNum})
     </select>
 
+    <!--환자 접수 취소-->
+    <delete id="delRec">
+        DELETE FROM HOS_REC
+        WHERE REC_NUM = #{recNum};
+    </delete>
+
 </mapper>
 
 

@@ -26,4 +26,6 @@ public interface RecService {
     /*예상 대기 시간*/
     int estimatedWaitTime(int partNum);
 
+    /*환자 접수 취소*/
+    void delRec(int recNum);
 }

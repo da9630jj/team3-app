@@ -31,7 +31,8 @@ public class RecController {
     /*담당의 조회*/
     @GetMapping("selectStaffName/{selectedPart}")
     public List<StaffVO> selectStaffName(@PathVariable("selectedPart") int partNum){
-        return recService.selectStaffName(partNum);}
+        return recService.selectStaffName(partNum);
+    }
 
     /*대기 현황*/
     @GetMapping("waitPatie/{patieNum}")
@@ -49,6 +50,12 @@ public class RecController {
     @GetMapping("/estimatedWaitTime/{partNum}")
     public int estimatedWaitTime(@PathVariable("partNum") int partNum) {
         return recService.estimatedWaitTime(partNum);
+    }
+
+    /*환자 접수 취소*/
+    @DeleteMapping("/delRec/{recNum}")
+    public void recNum(@PathVariable("recNum") int recNum){
+        recService.delRec(recNum);
     }
 
 }

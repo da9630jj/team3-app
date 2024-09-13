@@ -23,11 +23,6 @@ public class PatieServiceImpl implements PatieService {
         sqlSession.insert("patieMapper.insertPatie", patieVO);
     }
 
-    /*초진 환자 접수 취소*/
-    @Override
-    public void delFirPatie(int patieNum) {
-        sqlSession.delete("patieMapper.delFirPatie", patieNum);
-    }
 
     /*재진 환자 찾기*/
     @Override

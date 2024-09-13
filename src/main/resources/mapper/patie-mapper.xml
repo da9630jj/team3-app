@@ -26,12 +26,6 @@
     </insert>
 
 
-    <!--초진 환자 접수 취소-->
-    <delete id="delFirPatie">
-        DELETE FROM HOS_PATIE
-        WHERE PATIE_NUM = #{patieNum};
-    </delete>
-    
     <!--재진 환자 찾기-->
     <select id="findRePatie" resultMap="patie">
         SELECT PATIE_BIRTH, PATIE_NUM, PATIE_NAME

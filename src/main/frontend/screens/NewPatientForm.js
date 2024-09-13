@@ -12,6 +12,7 @@ export default function NewPatientForm() {
    const { navigate } = useNavigation();
    const [parts, setParts] = useState([]);
    const [staffs, setStaffs] = useState([]);
+   const [patieRegistered, setPatieRegistered] = useState(false);
 
    // 환자 정보 값 저장
    const [formDataPatie, setFormDataPatie] = useState({
@@ -209,29 +210,51 @@ export default function NewPatientForm() {
    };
 
    //환자 정보 등록 버튼 클릭 시 실행
-   function regPatie(){
-      console.log(formDataPatie)
-      axios.post(`http://localhost:8085/patie/insertPatie`, formDataPatie, {withCredentials: true})
-      .then((res) => {
-         console.log(res.data);
-         setFormDataRec({...formDataRec, patieNum : res.data})
-      })
-      .catch((error) => {
-         alert(error);
-      });
+   function regPatie() {
+      const { patieName, patieBirth, patieTel, patieAddr } = formDataPatie;
+   
+      // 필수 입력값 체크
+      if (!patieName || !patieBirth[0] || !patieBirth[1] || !patieTel[0] || !patieTel[1] || !patieTel[2] || !patieAddr[0] || !patieAddr[1]) {
+         setPatieRegistered(false);
+         alert('모든 필수 입력 필드를 채워주세요.');
+         return;
+      }
+   
+      console.log(formDataPatie);
+      axios.post(`http://localhost:8085/patie/insertPatie`, formDataPatie, { withCredentials: true })
+         .then((res) => {
+            console.log(res.data);
+            setFormDataRec({ ...formDataRec, patieNum: res.data });
+            setPatieRegistered(true);
+            alert('환자 등록이 완료되었습니다.');
+         })
+         .catch((error) => {
+            alert('환자 등록에 실패했습니다.');
+         });
    }
    
    //작성완료 클릭 시 실행
-   function insertRec(){
-      axios.post(`http://localhost:8085/rec/insertRec`, formDataRec, {withCredentials: true})
-      .then((res) => {
-         alert('진료 접수되었습니다.');
-         navigate(`WaitingInfo`, {patieNum : formDataRec.patieNum});
-      })
-      .catch((error) => {
-         alert(error);
-      });
+   function insertRec() {
+      if (!patieRegistered) {
+         alert('환자 등록이 완료되지 않았습니다.');
+         return;
+      }
+   
+      if (!formDataRec.recDetail || !formDataRec.partNum || !formDataRec.staffNum) {
+         alert( '모든 필수 필드를 입력해주세요.');
+         return;
+      }
+   
+      axios.post(`http://localhost:8085/rec/insertRec`, formDataRec, { withCredentials: true })
+         .then((res) => {
+            alert('진료 접수가 완료되었습니다.');
+            navigate('WaitingInfo', { patieNum: formDataRec.patieNum });
+         })
+         .catch((error) => {
+            alert('진료 접수에 실패했습니다.');
+         });
    }
+   
 
    return (
       <SafeAreaView style={styles.container}>
