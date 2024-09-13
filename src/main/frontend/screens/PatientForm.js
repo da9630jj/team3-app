@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView } from 'react-native';
 import { Table, Row, Rows } from 'react-native-table-component';
 import RNPickerSelect from 'react-native-picker-select';
+import commonStyles from './commonStyles'
 
 export default function App() {
   const [formData, setFormData] = useState({

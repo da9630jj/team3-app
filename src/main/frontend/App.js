@@ -1,23 +1,39 @@
+import React, { useCallback } from 'react';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer } from '@react-navigation/native';
-// import PatientForm from './screens/PatientForm';
-import TabNavigation from './screens/TabNavigation';
-import { createStackNavigator } from '@react-navigation/stack';
-import RePatientForm from './screens/RePatientForm';
-import WaitingInfo from './screens/WaitingInfo';
-import NewPatientForm from './screens/NewPatientForm';
 import StackNavigator from './screens/StackNavigator';
 
+
+// SplashScreen을 앱이 준비될 때까지 보이도록 설정
+SplashScreen.preventAutoHideAsync();
+
 export default function App() {
-  const Stack = createStackNavigator();
+  const [fontsLoaded] = useFonts({
+    'Nasensitivity': require('./assets/fonts/Nasensitivity.ttf'),
+    'Pretendard-Black': require('./assets/fonts/Pretendard-Black.otf'),
+    'Pretendard-ExtraBold': require('./assets/fonts/Pretendard-ExtraBold.otf'),
+    'Pretendard-Bold': require('./assets/fonts/Pretendard-Bold.otf'),
+    'Pretendard-SemiBold': require('./assets/fonts/Pretendard-SemiBold.otf'),
+    'Pretendard-Medium': require('./assets/fonts/Pretendard-Medium.otf'),
+    'Pretendard-Regular': require('./assets/fonts/Pretendard-Regular.otf'),
+    'Pretendard-Light': require('./assets/fonts/Pretendard-Light.otf'),
+    'Pretendard-Thin': require('./assets/fonts/Pretendard-Thin.otf'),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      // 폰트가 로드되면 SplashScreen을 숨깁니다
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <NavigationContainer>
-      {/* <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="TabNavigation" component={TabNavigation} />
-        <Stack.Screen name="RePatientForm" component={RePatientForm}/>
-        <Stack.Screen name="NewPatientForm" component={NewPatientForm}/>
-        <Stack.Screen name="WaitingInfo" component={WaitingInfo}/>
-      </Stack.Navigator>*/}
       <StackNavigator /> 
     </NavigationContainer>
   );

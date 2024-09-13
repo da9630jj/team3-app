@@ -1,5 +1,6 @@
 package com.green.team3_app.patie.service;
 
+import com.green.team3_app.patie.vo.MemberVO;
 import com.green.team3_app.patie.vo.PatieVO;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,5 +29,10 @@ public class PatieServiceImpl implements PatieService {
     @Override
     public List<PatieVO> findRePatie(PatieVO patieVO) {
         return sqlSession.selectList("patieMapper.findRePatie", patieVO);
+    }
+
+    @Override
+    public PatieVO login(MemberVO memberVO) {
+        return sqlSession.selectOne("patieMapper.login", memberVO);
     }
 }

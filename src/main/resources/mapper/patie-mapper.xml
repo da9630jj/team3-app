@@ -13,6 +13,12 @@
         <result column="PERSONAL_YN " property="personalYN"/>
     </resultMap>
 
+    <resultMap id="member" type="com.green.team3_app.patie.vo.MemberVO">
+        <result column="MEM_ID" property="memId"/>
+        <result column="MEM_PW" property="memPw"/>
+        <result column="MEM_BIRTH" property="memBirth" />
+    </resultMap>
+
     <!--다음에 들어갈 환자번호 조회-->
     <select id="getNextPatieNum" resultType="int">
         SELECT IFNULL(MAX(PATIE_NUM), 0) + 1
@@ -32,6 +38,15 @@
         FROM HOS_PATIE
         WHERE PATIE_BIRTH = #{patieBirth}
         AND PATIE_NAME = #{patieName};
+    </select>
+
+    <!-- 로그인 -->
+    <select id="login" resultMap="patie">
+        SELECT PATIE_NUM, PATIE_NAME
+        FROM hos_member, hos_patie
+        WHERE MEM_ID=#{memId}
+        AND MEM_PW=#{memPw}
+        AND MEM_BIRTH = PATIE_BIRTH;
     </select>
 
 </mapper>
