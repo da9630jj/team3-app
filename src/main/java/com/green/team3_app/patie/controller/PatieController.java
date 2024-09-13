@@ -1,6 +1,7 @@
 package com.green.team3_app.patie.controller;
 
 import com.green.team3_app.patie.service.PatieService;
+import com.green.team3_app.patie.vo.MemberVO;
 import com.green.team3_app.patie.vo.PatieVO;
 import com.green.team3_app.patie.vo.ReceivePatieVO;
 import jakarta.annotation.Resource;
@@ -36,5 +37,12 @@ public class PatieController {
     @DeleteMapping("/delFirPatie/{patieNum}")
     public void delFirPatie(@PathVariable("patieNum") int patieNum){
         patieService.delFirPatie(patieNum);
+    }
+
+    /*로그인*/
+    @PostMapping("/login")
+    public PatieVO login(@RequestBody MemberVO memberVO) {
+        System.out.println(patieService.login(memberVO));
+        return patieService.login(memberVO);
     }
 }

@@ -1,5 +1,6 @@
 package com.green.team3_app.patie.service;
 
+import com.green.team3_app.patie.vo.MemberVO;
 import com.green.team3_app.patie.vo.PatieVO;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public interface PatieService {
     /*초진 환자 접수 취소*/
     void delFirPatie(int patieNum);
 
-
+    /*로그인*/
+    PatieVO login(MemberVO memberVO);
 
 }

@@ -4,6 +4,8 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Home from './Home';
+import { ex_ip } from '../external_ip';
+import commonStyles from './commonStyles';
 
 export default function WaitingInfo() {
    const route = useRoute();
@@ -21,7 +23,7 @@ export default function WaitingInfo() {
 
    const fetchWaitPatie = () => {
       // 기본 대기 정보 
-      axios.get(`http://localhost:8085/rec/waitPatie/${patieNum}`, { withCredentials: true })
+      axios.get(`${ex_ip}/rec/waitPatie/${patieNum}`, { withCredentials: true })
       .then((res) => {
          console.log(res.data);
          setWaitPatie(res.data);
@@ -29,7 +31,7 @@ export default function WaitingInfo() {
 
          // 대기인원 정보
          if (partNum) {
-            axios.get(`http://localhost:8085/rec/waitCount/${partNum}`, { withCredentials: true })
+            axios.get(`${ex_ip}/rec/waitCount/${partNum}`, { withCredentials: true })
             .then((res) => {
                console.log(res.data);
                setWaitCount(res.data);
@@ -37,7 +39,7 @@ export default function WaitingInfo() {
             .catch((error) => { console.log(error); });
 
             // 예상 대기 시간 정보
-            axios.get(`http://localhost:8085/rec/estimatedWaitTime/${partNum}`, { withCredentials: true })
+            axios.get(`${ex_ip}/rec/estimatedWaitTime/${partNum}`, { withCredentials: true })
             .then((res) => {
                console.log(res.data);
                setEstimatedWaitTime(res.data);
@@ -60,7 +62,7 @@ export default function WaitingInfo() {
    // 접수 취소
    function delFirPatie() {
       if (window.confirm('접수를 취소하시겠습니까?')) {
-            axios.delete(`http://localhost:8085/patie/delFirPatie/${patieNum}`, {withCredentials:true})
+            axios.delete(`${ex_ip}/patie/delFirPatie/${patieNum}`, {withCredentials:true})
                .then((res) => {
                   alert('접수가 취소되었습니다.')
                   navigate('Home');
@@ -69,14 +71,14 @@ export default function WaitingInfo() {
       } 
    
    return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, commonStyles.container]}>
          <ScrollView
                contentContainerStyle={styles.scrollViewContent}
                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
          >
                <View style={styles.content}>
-                  <Text style={styles.titleText}>{waitPatie.patieVO?.patieName || '정보 없음'} 님의 대기 현황</Text>
-                  <View style={[styles.row, styles.sideAlign]}>
+                  <Text style={commonStyles.titleText}>{waitPatie.patieVO?.patieName || '정보 없음'} 님의 대기 현황</Text>
+                  <View style={[commonStyles.row, styles.sideAlign]}>
                      <Text style={styles.waitingNum}>{waitPatie.recNum || '정보 없음'}번</Text>
                      <TouchableOpacity onPress={onRefresh}>
                            <Text>새로고침</Text>
@@ -85,36 +87,36 @@ export default function WaitingInfo() {
                   <View>
                      <View style={styles.table}>
                            {/* 첫 번째 행 */}
-                           <View style={styles.row}>
+                           <View style={commonStyles.row}>
                               <View style={[styles.cell, styles.cell1]}>
-                                 <Text style={[styles.cellText, styles.leftAlign]}>진료과</Text>
+                                 <Text style={[styles.cellText, commonStyles.leftAlign]}>진료과</Text>
                               </View>
                               <View style={[styles.cell, styles.cell2]}>
-                                 <Text style={[styles.cellText, styles.rightAlign]}>
+                                 <Text style={[styles.cellText, commonStyles.rightAlign]}>
                                        {waitPatie.staffVO?.part?.partName || '정보 없음'}
                                  </Text>
                               </View>
                            </View>
 
                            {/* 두 번째 행 */}
-                           <View style={styles.row}>
+                           <View style={commonStyles.row}>
                               <View style={[styles.cell, styles.cell1]}>
-                                 <Text style={[styles.cellText, styles.leftAlign]}>대기인원</Text>
+                                 <Text style={[styles.cellText, commonStyles.leftAlign]}>대기인원</Text>
                               </View>
                               <View style={[styles.cell, styles.cell2]}>
-                                 <Text style={[styles.cellText, styles.rightAlign]}>
+                                 <Text style={[styles.cellText, commonStyles.rightAlign]}>
                                        {waitCount || '정보 없음'}명
                                  </Text>
                               </View>
                            </View>
 
                            {/* 세 번째 행 */}
-                           <View style={styles.row}>
+                           <View style={commonStyles.row}>
                               <View style={[styles.cell, styles.cell1]}>
-                                 <Text style={[styles.cellText, styles.leftAlign]}>예상 대기 시간</Text>
+                                 <Text style={[styles.cellText, commonStyles.leftAlign]}>예상 대기 시간</Text>
                               </View>
                               <View style={[styles.cell, styles.cell2]}>
-                                 <Text style={[styles.cellText, styles.rightAlign]}>
+                                 <Text style={[styles.cellText, commonStyles.rightAlign]}>
                                        {estimatedWaitTime || '정보 없음'}분
                                  </Text>
                               </View>
@@ -128,9 +130,9 @@ export default function WaitingInfo() {
                   </View>
                </View>
          </ScrollView>
-         <View style={styles.btnDiv}>
-               <TouchableOpacity style={styles.btn} onPress={() => delFirPatie()}>
-                  <Text style={styles.btnText}>접수 취소</Text>
+         <View style={commonStyles.btnDiv}>
+               <TouchableOpacity style={commonStyles.btn} onPress={() => delFirPatie()}>
+                  <Text style={commonStyles.btnText}>접수 취소</Text>
                </TouchableOpacity>
          </View>
       </SafeAreaView>
@@ -139,15 +141,15 @@ export default function WaitingInfo() {
 
 const styles = StyleSheet.create({
    container: {
-      flex: 1,
-      padding: 16,
-      backgroundColor: '#fff',
-      justifyContent: 'center',
+      // flex: 1,
+      // padding: 16,
+      // backgroundColor: '#fff',
+      // justifyContent: 'center',
       alignContent: 'center',
    },
-   titleText: {
-      fontWeight: 'bold',
-   },
+   // titleText: {
+   //    fontWeight: 'bold',
+   // },
    waitingNum: {
       fontWeight: 'bold',
       fontSize: 50,
@@ -162,9 +164,9 @@ const styles = StyleSheet.create({
       backgroundColor: '#f1f1f1',
       borderRadius: 3,
    },
-   row: {
-      flexDirection: 'row',
-   },
+   // row: {
+   //    flexDirection: 'row',
+   // },
    cell: {
       flex: 1,
       paddingHorizontal: 20,
@@ -178,30 +180,29 @@ const styles = StyleSheet.create({
       fontSize: 16,
       width: '100%',
    },
-   leftAlign: {
-      textAlign: 'left',
-   },
-   rightAlign: {
-      textAlign: 'right',
-   },
-   btnDiv: {
-      marginTop: 20,
-      alignItems: 'center',
-   },
-   btn: {
-      fontWeight: 800,
-      backgroundColor: '#f1f1f1',
-      borderRadius: 3,
-      width: '100%',
-      paddingVertical: 10
-   },
-   btnText: {
-      textAlign: 'center',
-      fontWeight: 'bold',
-   },
-   bottomDiv: {
-      marginTop: 'auto'
-   },
+   // leftAlign: {
+   //    textAlign: 'left',
+   // },
+   // rightAlign: {
+   //    textAlign: 'right',
+   // },
+   // btnDiv: {
+   //    marginTop: 20,
+   //    alignItems: 'center',
+   // },
+   // btn: {
+   //    backgroundColor: '#f1f1f1',
+   //    borderRadius: 3,
+   //    width: '100%',
+   //    paddingVertical: 10
+   // },
+   // btnText: {
+   //    textAlign: 'center',
+   //    fontWeight: 'bold',
+   // },
+   // bottomDiv: {
+   //    marginTop: 'auto'
+   // },
    noDiv: {
       
    },
