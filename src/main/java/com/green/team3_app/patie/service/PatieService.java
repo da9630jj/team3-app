@@ -12,6 +12,9 @@ public interface PatieService {
     /*초진 환자 전용*/
     void insertPatie(PatieVO patieVO);
 
+    /*초진 환자 접수 취소*/
+    void delFirPatie(int patieNum);
+
 
 
 }

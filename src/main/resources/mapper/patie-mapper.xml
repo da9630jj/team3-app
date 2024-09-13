@@ -19,10 +19,17 @@
         FROM HOS_PATIE
     </select>
 
+    <!--초진 환자 등록-->
     <insert id="insertPatie">
         INSERT INTO HOS_PATIE(PATIE_NUM, PATIE_NAME, PATIE_TEL, PATIE_BIRTH, PATIE_ADDR, PATIE_GEN)
         VALUES(#{patieNum}, #{patieName}, #{patieTel}, #{patieBirth}, #{patieAddr}, 'F');
     </insert>
+
+    <!--초진 환자 접수 취소-->
+    <delete id="delFirPatie">
+        DELETE FROM HOS_PATIE
+        WHERE PATIE_NUM = #{patieNum};
+    </delete>
 
 </mapper>
 
