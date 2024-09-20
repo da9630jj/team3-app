@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   head: { height: 40, backgroundColor: '#f1f8ff' },
   row1: { height: 60, flexDirection: 'row' },
   row2: { height: 60, flexDirection: 'row' },
-  text: { textAlign: 'center', fontWeight: '100' },
+  text: { textAlign: 'center', fontWeight: 100 },
   border: { borderWidth: 1, borderColor: '#c8e1ff' },
   input: { height: 40, borderColor: '#ddd', borderWidth: 1, paddingHorizontal: 8 },
   phoneContainer: { flexDirection: 'row', alignItems: 'center' },

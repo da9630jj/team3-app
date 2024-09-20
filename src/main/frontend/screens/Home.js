@@ -3,12 +3,52 @@ import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from './commonStyles'
+//import RNEncryptedStorage from 'react-native-encrypted-storage';
+//import EncryptedStorage from 'react-native-encrypted-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 var { height, width } = Dimensions.get('window');
 
 export default function Home() {
    const {navigate} = useNavigation();
-   const [isRec, setIsRec] = useState(true);
+   const [isRec, setIsRec] = useState(false);
+   const [data, setData] = useState(null);
+
+   const loadData = async () => {
+      try {
+         const value = await AsyncStorage.getItem('recInfo');
+         if (value != null) {
+            setData(value);
+            }
+      } catch (e) {
+         console.error('Failed to load data:', e);
+      }
+   };
+   
+   useEffect(() => {
+      loadData();
+      if (data != null) {
+         setIsRec(true);
+      }
+      console.log("저장된 데이터:");
+      console.log(data);
+   }, []);
+
+   // useEffect(() => {
+   //    retrieveUserSession();
+   // }, []);
+
+   // async function retrieveUserSession() {
+   //    try {   
+   //          const session = await EncryptedStorage.getItem("user_session");
+      
+   //          if (session !== undefined) {
+   //             setIsRec(true);
+   //          }
+   //    } catch (error) {
+   //          alert(error)
+   //    }
+   // }
 
    return (
       <SafeAreaView style={[commonStyles.container, styles.container]}>
@@ -21,7 +61,7 @@ export default function Home() {
          <View>
             {
                isRec ?
-                  <TouchableOpacity style={[styles.btn, styles.btn3]} onPress={() => {navigate("WaitingInfo")}}>
+                  <TouchableOpacity style={[styles.btn, styles.btn3]} onPress={() => {navigate("WaitingInfo", { patieNum: Number(data.patieNum) })}}>
                      <View style={[styles.row, commonStyles.row]}>
                         <View style={[styles.cell]}><Text style={[commonStyles.text, styles.cellText, commonStyles.leftAlign]}>나의 진료 현황</Text></View>
                         <View style={[styles.cell]}><Text style={[styles.cellText, commonStyles.rightAlign]}>→</Text></View>
@@ -105,6 +145,6 @@ const styles = StyleSheet.create({
    },
    logo: {
       fontSize: 50,
-      fontFamily: 'Nasensitivity'
+      fontFamily: 'Pretendard-Black'
    }, 
 })

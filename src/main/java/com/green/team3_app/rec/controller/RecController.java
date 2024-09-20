@@ -18,8 +18,13 @@ public class RecController {
 
     /*진료 작성*/
     @PostMapping("/insertRec")
-    void insertRec(@RequestBody RecVO recVO) {
+    int insertRec(@RequestBody RecVO recVO) {
+        int recNum = recService.getNextRecNum();
+
+        recVO.setRecNum(recNum);
         recService.insertRec(recVO);
+
+        return recNum;
     }
 
     //부서 목록 조회

@@ -28,4 +28,6 @@ public interface RecService {
 
     /*환자 접수 취소*/
     void delRec(int recNum);
+
+    int getNextRecNum();
 }

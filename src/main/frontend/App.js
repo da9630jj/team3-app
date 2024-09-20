@@ -1,8 +1,12 @@
 import React, { useCallback } from 'react';
 import { useFonts } from 'expo-font';
+import { View } from  'react-native'
 import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer } from '@react-navigation/native';
 import StackNavigator from './screens/StackNavigator';
+import Home from './screens/Home';
+// import RNEncryptedStorage from 'react-native-encrypted-storage';
+// import EncryptedStorage from 'react-native-encrypted-storage';
 
 
 // SplashScreen을 앱이 준비될 때까지 보이도록 설정
@@ -34,7 +38,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <StackNavigator /> 
+      <StackNavigator />  
     </NavigationContainer>
   );
 }

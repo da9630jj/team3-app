@@ -9,6 +9,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { RadioButton } from 'react-native-paper';
 import commonStyles from './commonStyles';
 import pickerStyles from './pickerStyles';
+// import EncryptedStorage from 'react-native-encrypted-storage';
+// import RNEncryptedStorage from 'react-native-encrypted-storage';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function NewPatientForm() {
    const { navigate } = useNavigation();
@@ -114,18 +119,18 @@ export default function NewPatientForm() {
       {
          label: '성별',
          component: (value, onChange) => (
-            <RadioButton.Group onValueChange={value => onChange(value)} value={value}>
-               <View style={commonStyles.inputContainer}>
-                  <View style={[styles.genRow, commonStyles.cell1]}>
-                     <RadioButton style={styles.genRadio} color='#444444' uncheckedColor='#dddddd' value='F' />
-                     <Text>여성</Text>
-                  </View>
-                  <View style={[styles.genRow, commonStyles.cell1]}>
-                     <RadioButton style={styles.genRadio} color='#444444' uncheckedColor='#dddddd' value='M' />
-                     <Text>남성</Text>
-                  </View>
-               </View>
-            </RadioButton.Group>
+            <View style={[styles.row]}>
+               <RadioButton.Group onValueChange={value => onChange(value)} value={value}>
+                     <View style={[styles.genRow]}>
+                        <RadioButton style={styles.genRadio} color='#444444' uncheckedColor='#dddddd' value='F' />
+                        <Text>여성</Text>
+                     </View>
+                     <View style={[styles.genRow]}>
+                        <RadioButton style={styles.genRadio} color='#444444' uncheckedColor='#dddddd' value='M' />
+                        <Text>남성</Text>
+                     </View>
+               </RadioButton.Group>
+            </View>
          )
       }
    ];
@@ -225,7 +230,7 @@ export default function NewPatientForm() {
       }
    
       console.log(formDataPatie);
-      axios.post(`http://localhost:8085/patie/insertPatie`, formDataPatie, { withCredentials: true })
+      axios.post(`${ex_ip}/patie/insertPatie`, formDataPatie, { withCredentials: true })
          .then((res) => {
             console.log(res.data);
             setFormDataRec({ ...formDataRec, patieNum: res.data });
@@ -249,40 +254,29 @@ export default function NewPatientForm() {
          return;
       }
    
-      axios.post(`http://localhost:8085/rec/insertRec`, formDataRec, { withCredentials: true })
+      axios.post(`${ex_ip}/rec/insertRec`, formDataRec, { withCredentials: true })
          .then((res) => {
             alert('진료 접수가 완료되었습니다.');
+            saveData(res.data);
             navigate('WaitingInfo', { patieNum: formDataRec.patieNum });
          })
          .catch((error) => {
             alert('진료 접수에 실패했습니다.');
          });
-//    function regPatie(){
-//       console.log(formDataPatie)
-//       axios.post(`${ex_ip}/patie/insertPatie`, formDataPatie, {withCredentials: true})
-//       .then((res) => {
-//          console.log(11)
-//          console.log(res.data);
-//          setFormDataRec({...formDataRec, patieNum : res.data})
-//       })
-//       .catch((error) => {
-//          alert(error);
-//       });
-//    }
-   
-//    //작성완료 클릭 시 실행
-//    function insertRec(){
-//       axios.post(`${ex_ip}/rec/insertRec`, formDataRec, {withCredentials: true})
-//       .then((res) => {
-//          alert('진료 접수되었습니다.');
-//          navigate(`WaitingInfo`, {patieNum : formDataRec.patieNum});
-//       })
-//       .catch((error) => {
-//          alert(error);
-//       });
-// >>>>>>> idw
    }
-   
+
+   // 세션에 데이터 저장
+   const saveData = async (recNum) => {
+      try {
+      await AsyncStorage.setItem('recInfo', JSON.stringify({
+         recNum: recNum,
+         patieNum: formDataRec.patieNum,
+         partNum: formDataRec.partNum
+         }));
+      } catch (e) {
+      console.error('Failed to save data:', e);
+      }
+   };
 
    return (
       <SafeAreaView style={commonStyles.container}>
@@ -342,9 +336,7 @@ export default function NewPatientForm() {
          <TouchableOpacity
             style={commonStyles.btn}
             onPress={() => {
-               // 난중엔 등록 함수가 올 듯…
                insertRec();
-               
             }}
          >
             <Text style={commonStyles.btnText}>작성 완료</Text>
@@ -357,29 +349,16 @@ export default function NewPatientForm() {
    // 스타일 정의
    const styles = StyleSheet.create({
       genRow: {
-         alignItems: 'center',
+         paddingHorizontal: 20,
          flexDirection: 'row',
-         paddingHorizontal: 40
+         alignItems: 'center'
       },
       genRadio: {
          marginRight: 8,
+         color: '#000',
       },
+      row: {
+         alignItems: 'center',
+         flexDirection: 'row',
+      }
    });
-
-   // // 선택 상자 스타일 정의
-   // const pickerStyles = StyleSheet.create({
-   //    inputIOS: {
-   //       fontSize: 12,
-   //       width: '100%',
-   //       color: '#000000',
-   //       borderColor: '#000000',
-   //       padding: 10
-   //    },
-   //    inputAndroid: {
-   //       fontSize: 12,
-   //       width: '100%',
-   //       color: '#000000',
-   //       borderRadius: 12,
-   //       padding: 10
-   //    },
-   // });

@@ -102,7 +102,7 @@ export default function RePatientForm() {
 
    // 진료부서 조회
    useEffect(() => {
-      axios.get(`http://localhost:8085/rec/getPart`, {withCredentials: true})
+      axios.get(`${ex_ip}/rec/getPart`, {withCredentials: true})
          .then((res) => {
             setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
          })
@@ -114,7 +114,7 @@ export default function RePatientForm() {
    // 담당의 조회 
    useEffect(() => {
       if (formDataRec.partNum) {
-         axios.get(`http://localhost:8085/rec/selectStaffName/${formDataRec.partNum}`, {withCredentials: true})
+         axios.get(`${ex_ip}/rec/selectStaffName/${formDataRec.partNum}`, {withCredentials: true})
          .then((res) => {
             setStaffs(res.data.map(staff => ({ label: staff.staffName, value: staff.staffNum })));
          })
@@ -137,7 +137,7 @@ export default function RePatientForm() {
    // 환자 찾기
    function findRePatie() {
       const patieBirth = formDataPatie.patieBirth.join('-');
-      axios.get('http://localhost:8085/patie/findRePatie', {
+      axios.get(`${ex_ip}/patie/findRePatie`, {
          params: {
             patieName: formDataPatie.patieName,
             patieBirth: patieBirth
@@ -189,7 +189,7 @@ export default function RePatientForm() {
          return;
       }
 
-      axios.post(`http://localhost:8085/rec/insertRec`, formDataRec, {withCredentials: true})
+      axios.post(`${ex_ip}/rec/insertRec`, formDataRec, {withCredentials: true})
       .then((res) => {
          alert('진료가 접수되었습니다.');
          navigate('WaitingInfo', { patieNum: formDataRec.patieNum });

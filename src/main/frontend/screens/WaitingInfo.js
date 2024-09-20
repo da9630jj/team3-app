@@ -141,9 +141,12 @@ export default function WaitingInfo() {
                </View>
          </ScrollView>
          <View style={commonStyles.btnDiv}>
-               <TouchableOpacity style={commonStyles.btn} onPress={() => delFirPatie()}>
-                  <Text style={commonStyles.btnText}>접수 취소</Text>
-               </TouchableOpacity>
+            <TouchableOpacity style={commonStyles.btn} onPress={() => delFirPatie()}>
+               <Text style={commonStyles.btnText}>접수 취소</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={commonStyles.btn} onPress={() => delFirPatie()}>
+               <Text style={commonStyles.btnText}>홈으로 이동</Text>
+            </TouchableOpacity>
          </View>
       </SafeAreaView>
    );
@@ -151,15 +154,8 @@ export default function WaitingInfo() {
 
 const styles = StyleSheet.create({
    container: {
-      // flex: 1,
-      // padding: 16,
-      // backgroundColor: '#fff',
-      // justifyContent: 'center',
       alignContent: 'center',
    },
-   // titleText: {
-   //    fontWeight: 'bold',
-   // },
    waitingNum: {
       fontWeight: 'bold',
       fontSize: 50,
@@ -174,9 +170,6 @@ const styles = StyleSheet.create({
       backgroundColor: '#f1f1f1',
       borderRadius: 3,
    },
-   // row: {
-   //    flexDirection: 'row',
-   // },
    cell: {
       flex: 1,
       paddingHorizontal: 20,
@@ -190,29 +183,6 @@ const styles = StyleSheet.create({
       fontSize: 16,
       width: '100%',
    },
-   // leftAlign: {
-   //    textAlign: 'left',
-   // },
-   // rightAlign: {
-   //    textAlign: 'right',
-   // },
-   // btnDiv: {
-   //    marginTop: 20,
-   //    alignItems: 'center',
-   // },
-   // btn: {
-   //    backgroundColor: '#f1f1f1',
-   //    borderRadius: 3,
-   //    width: '100%',
-   //    paddingVertical: 10
-   // },
-   // btnText: {
-   //    textAlign: 'center',
-   //    fontWeight: 'bold',
-   // },
-   // bottomDiv: {
-   //    marginTop: 'auto'
-   // },
    noDiv: {
       
    },

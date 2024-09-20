@@ -20,8 +20,8 @@
 
     <!--진료 작성-->
     <insert id="insertRec">
-        INSERT INTO HOS_REC(REC_DATE, IS_REC, REC_STATUS, REC_DETAIL, PATIE_NUM, STAFF_NUM)
-        VALUES(NOW(), 'N', '대기', #{recDetail}, #{patieNum}, #{staffNum})
+        INSERT INTO HOS_REC(REC_NUM, REC_DATE, IS_REC, REC_STATUS, REC_DETAIL, PATIE_NUM, STAFF_NUM)
+        VALUES(#{recNum}, NOW(), 'N', '대기', #{recDetail}, #{patieNum}, #{staffNum})
     </insert>
 
     <!--대기 현황-->
@@ -58,6 +58,11 @@
         DELETE FROM HOS_REC
         WHERE REC_NUM = #{recNum};
     </delete>
+
+    <select id="getNextRecNum" resultType="int">
+        SELECT IFNULL(MAX(REC_NUM), 0) + 1
+        FROM HOS_REC
+    </select>
 
 </mapper>
 

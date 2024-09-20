@@ -32,6 +32,11 @@ public class PatieServiceImpl implements PatieService {
     }
 
     @Override
+    public void delFirPatie(int patieNum) {
+
+    }
+
+    @Override
     public PatieVO login(MemberVO memberVO) {
         return sqlSession.selectOne("patieMapper.login", memberVO);
     }

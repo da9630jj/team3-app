@@ -58,5 +58,10 @@ public class RecServiceImpl implements RecService{
     public void delRec(int recNum) {
         sqlSession.delete("recMapper.delRec", recNum);
     }
+
+    @Override
+    public int getNextRecNum() {
+        return sqlSession.selectOne("recMapper.getNextRecNum");
+    }
 }
 

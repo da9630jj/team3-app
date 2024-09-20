@@ -49,6 +49,8 @@
         AND MEM_BIRTH = PATIE_BIRTH;
     </select>
 
+
+
 </mapper>
 
 
