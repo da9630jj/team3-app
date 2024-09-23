@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from './commonStyles'
-//import RNEncryptedStorage from 'react-native-encrypted-storage';
-//import EncryptedStorage from 'react-native-encrypted-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 var { height, width } = Dimensions.get('window');
@@ -13,42 +11,57 @@ export default function Home() {
    const {navigate} = useNavigation();
    const [isRec, setIsRec] = useState(false);
    const [data, setData] = useState(null);
+   const [loginData, setLoginData] = useState(null);
 
    const loadData = async () => {
       try {
          const value = await AsyncStorage.getItem('recInfo');
          if (value != null) {
-            setData(value);
-            }
+            const parsedValue = JSON.parse(value);
+            setData(parsedValue);
+         }
       } catch (e) {
          console.error('Failed to load data:', e);
       }
    };
-   
+
+   const loadLoginData = async () => {
+      try {
+         const value = await AsyncStorage.getItem('loginInfo');
+         if (value != null) {
+            const parsedValue = JSON.parse(value);
+            setLoginData(parsedValue);
+         }
+      } catch (e) {
+         console.error('Failed to load loginData:', e);
+      }
+   };
+
    useEffect(() => {
       loadData();
-      if (data != null) {
-         setIsRec(true);
-      }
-      console.log("저장된 데이터:");
-      console.log(data);
+      loadLoginData();
    }, []);
+   
+   useEffect(() => {
+      if (data) {
+         setIsRec(true);
+         console.log("저장된 데이터:");
+         console.log(data);
+      } else {
+         setIsRec(false);
+         console.log("저장된 데이터 없음");
+      }
+   }, [data]);
 
-   // useEffect(() => {
-   //    retrieveUserSession();
-   // }, []);
-
-   // async function retrieveUserSession() {
-   //    try {   
-   //          const session = await EncryptedStorage.getItem("user_session");
-      
-   //          if (session !== undefined) {
-   //             setIsRec(true);
-   //          }
-   //    } catch (error) {
-   //          alert(error)
-   //    }
-   // }
+   useEffect(() => {
+      if (loginData) {
+         console.log("저장된 로그인 데이터:");
+         console.log(loginData);
+      } else {
+         setIsRec(false);
+         console.log("저장된 로그인 데이터 없음");
+      }
+   }, [loginData]);
 
    return (
       <SafeAreaView style={[commonStyles.container, styles.container]}>

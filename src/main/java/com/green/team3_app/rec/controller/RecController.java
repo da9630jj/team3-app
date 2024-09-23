@@ -40,9 +40,9 @@ public class RecController {
     }
 
     /*대기 현황*/
-    @GetMapping("waitPatie/{patieNum}")
-    public RecVO waitPatie(@PathVariable("patieNum") int patieNum){
-        return recService.waitPatie(patieNum);
+    @GetMapping("waitPatie/{recNum}")
+    public RecVO waitPatie(@PathVariable("recNum") int recNum){
+        return recService.waitPatie(recNum);
     }
 
     /*대기 인원*/

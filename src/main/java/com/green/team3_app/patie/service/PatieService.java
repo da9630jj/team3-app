@@ -20,6 +20,6 @@ public interface PatieService {
     void delFirPatie(int patieNum);
 
     /*로그인*/
-    PatieVO login(MemberVO memberVO);
+    MemberVO login(MemberVO memberVO);
 
 }

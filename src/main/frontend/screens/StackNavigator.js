@@ -5,6 +5,7 @@ import WaitingInfo from './WaitingInfo';
 import NewPatientForm from './NewPatientForm';
 import RePatientForm from './RePatientForm';
 import LoginForm from './LoginForm';
+import Mypage from './Mypage';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ export default function StackNavigator() {
          <Stack.Screen name="RePatientForm" component={RePatientForm} options={{title: ''}} />
          <Stack.Screen name="NewPatientForm" component={NewPatientForm} options={{title: ''}} />
          <Stack.Screen name="WaitingInfo" component={WaitingInfo} options={{title: ''}} />
+         <Stack.Screen name="Mypage" component={Mypage} options={{title: ''}} />
          <Stack.Screen name="LoginForm" component={LoginForm} options={{title: ''}} />
       </Stack.Navigator>
    );

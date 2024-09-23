@@ -25,13 +25,23 @@
     </insert>
 
     <!--대기 현황-->
+<!--    <select id="waitPatie" resultMap="rec">-->
+<!--        SELECT *-->
+<!--        FROM HOS_REC R, HOS_STAFF S, HOS_PART A, HOS_PATIE P-->
+<!--        WHERE P.PATIE_NUM=R.PATIE_NUM-->
+<!--        AND s.STAFF_NUM = R.STAFF_NUM-->
+<!--        AND A.PART_NUM = S.PART_NUM-->
+<!--        AND P.PATIE_NUM= #{patieNum}-->
+<!--        AND REC_STATUS = "대기";-->
+<!--    </select>-->
+    <!--대기 현황-->
     <select id="waitPatie" resultMap="rec">
         SELECT *
         FROM HOS_REC R, HOS_STAFF S, HOS_PART A, HOS_PATIE P
-        WHERE P.PATIE_NUM=R.PATIE_NUM
-        AND s.STAFF_NUM = R.STAFF_NUM
+        WHERE P.PATIE_NUM = R.PATIE_NUM
+        AND S.STAFF_NUM = R.STAFF_NUM
         AND A.PART_NUM = S.PART_NUM
-        AND P.PATIE_NUM= #{patieNum}
+        AND R.REC_NUM= #{recNum}
         AND REC_STATUS = "대기";
     </select>
 

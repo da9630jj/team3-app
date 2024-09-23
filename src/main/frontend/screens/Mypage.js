@@ -1,19 +1,69 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import commonStyles from './commonStyles'
+import commonStyles from './commonStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Mypage() {
   const {navigate} = useNavigation();
+  const isFocused = useIsFocused();
+  const [loginData, setLoginData] = useState(null);
+  const [isLogin, setIsLogin] = useState(false);
+
+  const loadLoginData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('loginInfo');
+      if (value) {
+          const parsedValue = JSON.parse(value);
+          setLoginData(parsedValue);
+      }
+    } catch (e) {
+      console.error('Failed to load loginData:', e);
+    }
+};
+
+  useEffect(() => {
+    loadLoginData();
+  }, []);
+
+  useEffect(() => {
+    if (loginData) {
+      setIsLogin(true);
+      console.log("로그인 데이터 있음")
+    } else {
+      console.log("로그인 데이터 없음")
+      setIsLogin(false);
+    }
+}, [loginData]);
+
+  const removeData = async (key) => {
+    try {
+    await AsyncStorage.removeItem(key);
+    console.log(`${key}가 삭제되었습니다.`);
+    } catch (error) {
+    console.error('데이터 삭제 실패:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, commonStyles.container]}>
-      <View style={styles.topDiv}>
-        <Text style={commonStyles.titleText}>홍길동 님 안녕하세요</Text>
-        <Text style={styles.what}>뭐라고 쓰지</Text>
-      </View>
+      {
+        isLogin ? 
+          <View style={styles.topDiv}>
+            <Text style={commonStyles.titleText}>{loginData.patieName} 님 안녕하세요</Text>
+            <Text style={styles.what}>뭐라고 쓰지</Text>
+          </View>
+        :
+          <View style={styles.topDiv}>
+            <Text style={commonStyles.titleText}>로그인이 필요합니다</Text>
+            <Text style={styles.what}>로그인이 필요하다고</Text>
+          </View>
+      }
       <View style={styles.table}>
-        <TouchableOpacity style={commonStyles.row} onPress={() => {navigate("LoginForm")}}>
+        <TouchableOpacity style={commonStyles.row} onPress={() => {
+          isLogin ? alert("로그인했잖어") :  navigate("LoginForm");
+          }}>
           <View style={[styles.cell, styles.cell1]}>
             <Text style={[styles.cellText, commonStyles.leftAlign]}>개인 정보 수정</Text>
           </View>
@@ -56,8 +106,8 @@ export default function Mypage() {
       </View>
       <View style={[styles.btnDiv, commonStyles.btnDiv, commonStyles.bottomDiv]}>
         <TouchableOpacity style={[styles.btn, commonStyles.btn]} onPress={() => {
-            // 로그아웃을 합시다
-            navigate("Home")
+            removeData("loginInfo");
+            setIsLogin(false);
             }} >
             <Text style={commonStyles.btnText}>로그아웃</Text>
         </TouchableOpacity>

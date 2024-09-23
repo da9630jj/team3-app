@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -9,9 +9,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { RadioButton } from 'react-native-paper';
 import commonStyles from './commonStyles';
 import pickerStyles from './pickerStyles';
-// import EncryptedStorage from 'react-native-encrypted-storage';
-// import RNEncryptedStorage from 'react-native-encrypted-storage';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -119,8 +116,8 @@ export default function NewPatientForm() {
       {
          label: '성별',
          component: (value, onChange) => (
-            <View style={[styles.row]}>
-               <RadioButton.Group onValueChange={value => onChange(value)} value={value}>
+            <RadioButton.Group onValueChange={value => onChange(value)} value={value}>
+                  <View style={[styles.row]}>
                      <View style={[styles.genRow]}>
                         <RadioButton style={styles.genRadio} color='#444444' uncheckedColor='#dddddd' value='F' />
                         <Text>여성</Text>
@@ -129,8 +126,8 @@ export default function NewPatientForm() {
                         <RadioButton style={styles.genRadio} color='#444444' uncheckedColor='#dddddd' value='M' />
                         <Text>남성</Text>
                      </View>
-               </RadioButton.Group>
             </View>
+               </RadioButton.Group>
          )
       }
    ];
@@ -320,18 +317,6 @@ export default function NewPatientForm() {
          </View>
          ))}
 
-         {/* --------------난중에 삭제--------------- */}
-         <View>
-            <Text style={[commonStyles.titleText, commonStyles.titleTextNext]}>적용 확인용</Text>
-            <Text>이름: {formDataPatie.patieName}, 주민번호: {formDataPatie.patieBirth}</Text>
-            <Text>연락처: {formDataPatie.patieTel}</Text>
-            <Text>주소: {formDataPatie.patieAddr}</Text>
-            <Text>성별: {formDataPatie.patieGen}</Text>
-            <Text>증상: {formDataRec.recDetail}</Text>
-            <Text>진료부서: {formDataRec.partNum}, 담당의: {formDataRec.staffNum}</Text>
-         </View>
-         {/* --------------난중에 삭제---------------- */}
-
          <View style={[commonStyles.btnDiv, commonStyles.bottomDiv]}>
          <TouchableOpacity
             style={commonStyles.btn}
@@ -348,17 +333,17 @@ export default function NewPatientForm() {
 
    // 스타일 정의
    const styles = StyleSheet.create({
+      row: {
+         flexDirection: 'row',
+         alignItems: 'center',
+      },
       genRow: {
          paddingHorizontal: 20,
          flexDirection: 'row',
-         alignItems: 'center'
+         alignItems: 'center',
       },
       genRadio: {
          marginRight: 8,
          color: '#000',
       },
-      row: {
-         alignItems: 'center',
-         flexDirection: 'row',
-      }
    });

@@ -1,11 +1,15 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, BackHandler } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import commonStyles from './commonStyles'
 import axios from 'axios';
 import { ex_ip } from '../external_ip';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginForm(){
+   const { navigate } = useNavigation();
+
    // 로그인 값 저장
    const [formDataLogin, setFormDataLogin] = useState({
       memId: '',
@@ -26,8 +30,10 @@ export default function LoginForm(){
    const handleSubmit = () => {
       axios.post(`${ex_ip}/patie/login`, formDataLogin)
       .then((res) => {
-         console.log('로그인 성공')
+         console.log('로그인 성공');
+         saveData(res.data);
          setLoginMember(res.data);
+         navigate.goBack();
       })
       .catch((error) => {alert(error)});
    };
@@ -45,6 +51,20 @@ export default function LoginForm(){
    // 회원가입하기 버튼 함수 선언
    const handleJoin = () => {
       console.log('회원가입을 합시다');
+   };
+
+   // 세션에 데이터 저장
+   const saveData = async () => {
+      try {
+      await AsyncStorage.setItem('loginInfo', JSON.stringify({
+         memId: loginMember.memId,
+         memNum: loginMember.memNum,
+         memName: loginMember.memName,
+         memBirth: loginMember.memBirth,
+         }));
+      } catch (e) {
+      console.error('Failed to save data:', e);
+      }
    };
 
    return (
@@ -105,7 +125,8 @@ export default function LoginForm(){
             <View>
                <Text>아이디: {formDataLogin.memId}</Text>
                <Text>비밀번호: {formDataLogin.memPw}</Text>
-               <Text>로그인 멤버: {loginMember.patieNum}, {loginMember.patieName}</Text>
+               <Text>로그인 멤버: {loginMember.memNum}번, {loginMember.memName}님, {loginMember.memId}, {loginMember.memBirth}
+               </Text>
             </View>
       </SafeAreaView>
    );

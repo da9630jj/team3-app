@@ -35,8 +35,8 @@ public class RecServiceImpl implements RecService{
 
     /*대기현황*/
     @Override
-    public RecVO waitPatie(int patieNum) {
-        return sqlSession.selectOne("recMapper.waitPatie", patieNum);
+    public RecVO waitPatie(int recNum) {
+        return sqlSession.selectOne("recMapper.waitPatie", recNum);
     }
 
     /*대기 인원*/

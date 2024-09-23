@@ -37,7 +37,7 @@ public class PatieServiceImpl implements PatieService {
     }
 
     @Override
-    public PatieVO login(MemberVO memberVO) {
+    public MemberVO login(MemberVO memberVO) {
         return sqlSession.selectOne("patieMapper.login", memberVO);
     }
 }

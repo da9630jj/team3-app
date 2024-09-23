@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -7,6 +7,7 @@ import { ex_ip } from '../external_ip';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from './commonStyles';
 import pickerStyles from './pickerStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function RePatientForm() {
    const { navigate } = useNavigation();
@@ -192,15 +193,29 @@ export default function RePatientForm() {
       axios.post(`${ex_ip}/rec/insertRec`, formDataRec, {withCredentials: true})
       .then((res) => {
          alert('진료가 접수되었습니다.');
+         saveData(res.data)
          navigate('WaitingInfo', { patieNum: formDataRec.patieNum });
       })
       .catch((error) => {
          alert(error);
       });
    }
+
+      // 세션에 데이터 저장
+      const saveData = async (recNum) => {
+         try {
+         await AsyncStorage.setItem('recInfo', JSON.stringify({
+            recNum: recNum,
+            patieNum: formDataRec.patieNum,
+            partNum: formDataRec.partNum
+            }));
+         } catch (e) {
+         console.error('Failed to save data:', e);
+         }
+      };
    
    return (
-      <SafeAreaView style={commonStyles.container}>
+      <KeyboardAvoidingView style={commonStyles.container}>
          <Text style={commonStyles.titleText}>환자 정보</Text>
          {tableDataPatie.map((item, index) => (
             <View key={index} style={commonStyles.row}>
@@ -240,17 +255,6 @@ export default function RePatientForm() {
          ))
 }
 
-         {/* --------------난중에 삭제--------------- */}
-         <View>
-            <Text style={[commonStyles.titleText, commonStyles.titleTextNext]}>적용 확인용</Text>
-            <Text>이름: {formDataPatie.patieName}</Text>
-            <Text>주민번호: {formDataPatie.patieBirth}</Text>
-            <Text>증상: {formDataRec.recDetail}</Text>
-            <Text>진료부서: {formDataRec.partNum}</Text>
-            <Text>담당의: {formDataRec.staffNum}</Text>
-         </View>
-         {/* --------------난중에 삭제---------------- */}
-
          <View style={[commonStyles.btnDiv, commonStyles.bottomDiv]}>
             <TouchableOpacity
                style={commonStyles.btn}
@@ -261,6 +265,6 @@ export default function RePatientForm() {
                <Text style={commonStyles.btnText}>작성 완료</Text>
             </TouchableOpacity>
          </View>
-      </SafeAreaView>
+      </KeyboardAvoidingView>
    );
 }

@@ -11,7 +11,7 @@ const commonStyles = StyleSheet.create({
       fontFamily: 'Pretendard-Bold',
    },
    titleTextNext: {
-      marginTop: 70,
+      marginTop: 50,
    },
    row: {
       flexDirection: 'row',

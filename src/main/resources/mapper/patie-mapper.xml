@@ -11,6 +11,7 @@
         <result column="PATIE_ADDR" property="patieAddr"/>
         <result column="PATIE_GEN" property="patieGen"/>
         <result column="PERSONAL_YN " property="personalYN"/>
+<!--        <association property="member" resultMap="member" />-->
     </resultMap>
 
     <resultMap id="member" type="com.green.team3_app.patie.vo.MemberVO">
@@ -41,8 +42,8 @@
     </select>
 
     <!-- 로그인 -->
-    <select id="login" resultMap="patie">
-        SELECT PATIE_NUM, PATIE_NAME
+    <select id="login" resultMap="member">
+        SELECT MEM_NUM, MEM_NAME, MEM_BIRTH, MEM_ID
         FROM hos_member, hos_patie
         WHERE MEM_ID=#{memId}
         AND MEM_PW=#{memPw}
