@@ -4,11 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import commonStyles from './commonStyles'
 import axios from 'axios';
 import { ex_ip } from '../external_ip';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation  } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function LoginForm(){
-   const { navigate } = useNavigation();
+export default function LoginForm({navigation}){
+   //const { navigate } = useNavigation();
+
+
 
    // 로그인 값 저장
    const [formDataLogin, setFormDataLogin] = useState({
@@ -30,10 +32,10 @@ export default function LoginForm(){
    const handleSubmit = () => {
       axios.post(`${ex_ip}/patie/login`, formDataLogin)
       .then((res) => {
-         console.log('로그인 성공');
-         saveData(res.data);
          setLoginMember(res.data);
-         navigate.goBack();
+         saveData(res.data);
+         navigation.goBack();
+
       })
       .catch((error) => {alert(error)});
    };
@@ -56,14 +58,18 @@ export default function LoginForm(){
    // 세션에 데이터 저장
    const saveData = async () => {
       try {
-      await AsyncStorage.setItem('loginInfo', JSON.stringify({
+      const loginData = {
          memId: loginMember.memId,
          memNum: loginMember.memNum,
          memName: loginMember.memName,
          memBirth: loginMember.memBirth,
-         }));
+      };
+
+      console.log(loginData);
+
+      await AsyncStorage.setItem('loginInfo', JSON.stringify(loginData));
       } catch (e) {
-      console.error('Failed to save data:', e);
+         console.error('Failed to save data:', e);
       }
    };
 
@@ -116,18 +122,18 @@ export default function LoginForm(){
                </TouchableOpacity>
             </View>
          </View>
-            <View style={[commonStyles.row, styles.rightAlign]}>
-               <TouchableOpacity style={styles.extraBtn} onPress={handleJoin}>
-                  <Text style={styles.extraText}>회원가입하기</Text>
-               </TouchableOpacity>
-            </View>
+         <View style={[commonStyles.row, styles.rightAlign]}>
+            <TouchableOpacity style={styles.extraBtn} onPress={handleJoin}>
+               <Text style={styles.extraText}>회원가입하기</Text>
+            </TouchableOpacity>
+         </View>
 
-            <View>
-               <Text>아이디: {formDataLogin.memId}</Text>
-               <Text>비밀번호: {formDataLogin.memPw}</Text>
-               <Text>로그인 멤버: {loginMember.memNum}번, {loginMember.memName}님, {loginMember.memId}, {loginMember.memBirth}
-               </Text>
-            </View>
+         <View>
+            <Text>아이디: {formDataLogin.memId}</Text>
+            <Text>비밀번호: {formDataLogin.memPw}</Text>
+            <Text>로그인 멤버: {loginMember.memNum}번, {loginMember.memName}님, {loginMember.memId}, {loginMember.memBirth}
+            </Text>
+         </View>
       </SafeAreaView>
    );
 }

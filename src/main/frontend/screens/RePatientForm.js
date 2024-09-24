@@ -4,7 +4,6 @@ import RNPickerSelect from 'react-native-picker-select';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { ex_ip } from '../external_ip';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from './commonStyles';
 import pickerStyles from './pickerStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,6 +14,8 @@ export default function RePatientForm() {
    const [staffs, setStaffs] = useState([]);
    const [findPatie, setFindPatie] = useState([]);
    const [isPatientFound, setIsPatientFound] = useState(false);
+   const [loginData, setLoginData] = useState(null);
+   const [isLogin, setIsLogin] = useState(false);
 
    // 환자 정보 값 저장
    const [formDataPatie, setFormDataPatie] = useState({
@@ -30,6 +31,42 @@ export default function RePatientForm() {
       patieNum: 0
    });
 
+   const loadLoginData = async () => {
+      try {
+         const value = await AsyncStorage.getItem('loginInfo');
+         if (value != null) {
+            const parsedValue = JSON.parse(value);
+            setLoginData(parsedValue);
+            setFormDataPatie({
+               patieName: parsedValue.memName,
+               patieBirth: parsedValue.memBirth.split('-')
+            });
+         }
+      } catch (e) {
+         console.error('Failed to load loginData:', e);
+      }
+   };
+   
+   // 로그인 정보 받기 + 진료부서 조회
+   useEffect(() => {
+      loadLoginData();
+      axios.get(`${ex_ip}/rec/getPart`, {withCredentials: true})
+      .then((res) => {
+         setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
+      })
+      .catch((error) => {
+         alert(error);
+      });
+   }, []);
+   
+   useEffect(() => {
+      if (loginData) {
+         setIsLogin(true);
+      } else {
+         setIsLogin(false);
+      }
+}, [loginData]);
+
    // 환자 정보 테이블 내용
    const tableDataPatie = [
       {
@@ -38,27 +75,29 @@ export default function RePatientForm() {
             <TextInput
                style={commonStyles.input}
                onChangeText={onChange}
-               value={value}
+               value={isLogin ? formDataPatie.patieName : value}
             />
          )
       },
       {
          label: '주민번호',
-         component: (value, onChange) => (
-            <View style={commonStyles.inputContainer}>
-               <TextInput
-                  style={[commonStyles.input, commonStyles.inputSmall]}
-                  onChangeText={(text) => onChange(text, 0)}
-                  value={value[0]}
-               />
-               <Text style={commonStyles.dash}>-</Text>
-               <TextInput
-                  style={[commonStyles.input, commonStyles.inputSmall]}
-                  onChangeText={(text) => onChange(text, 1)}
-                  value={value[1]}
-               />
-            </View>
-         )
+         component: (value, onChange) => {
+            return (
+               <View style={commonStyles.inputContainer}>
+                  <TextInput
+                     style={[commonStyles.input, commonStyles.inputSmall]}
+                     onChangeText={(text) => onChange(text, 0)}
+                     value={formDataPatie.patieBirth[0]}
+                     />
+                  <Text style={commonStyles.dash}>-</Text>
+                  <TextInput
+                     style={[commonStyles.input, commonStyles.inputSmall]}
+                     onChangeText={(text) => onChange(text, 1)}
+                     value={formDataPatie.patieBirth[1]}
+                  />
+               </View>
+            )
+         }
       }
    ];
 
@@ -100,17 +139,6 @@ export default function RePatientForm() {
          )
       }
    ];
-
-   // 진료부서 조회
-   useEffect(() => {
-      axios.get(`${ex_ip}/rec/getPart`, {withCredentials: true})
-         .then((res) => {
-            setParts(res.data.map(part => ({ label: part.partName, value: part.partNum })));
-         })
-         .catch((error) => {
-            alert(error);
-         });
-   }, []);
 
    // 담당의 조회 
    useEffect(() => {
@@ -160,7 +188,7 @@ export default function RePatientForm() {
                setIsPatientFound(false); 
             }
          } else {
-            alert('환자 정보가 없습니다.');
+            alert('환자 정보가 없습니다.1');
             setIsPatientFound(false); 
          }
       })

@@ -50,15 +50,15 @@ public class PatieController {
 
     /*로그인*/
     @PostMapping("/login")
-    public MemberVO login(@RequestBody MemberVO memberVO, HttpSession session) {
+    public MemberVO login(@RequestBody MemberVO memberVO) {
+//    public MemberVO login(@RequestBody MemberVO memberVO, HttpSession session) {
 
         //로그인 진행
         MemberVO loginInfo = patieService.login(memberVO);
 
 //        if(loginInfo != null){
-//            session.setAttribute("patNum", loginInfo.getPatieNum());
+//            session.setAttribute("patNum", loginInfo.);
 //        }
-
 
         return patieService.login(memberVO);
     }

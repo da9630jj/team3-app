@@ -1,22 +1,27 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from './commonStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Mypage() {
   const {navigate} = useNavigation();
-  const isFocused = useIsFocused();
   const [loginData, setLoginData] = useState(null);
   const [isLogin, setIsLogin] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadLoginData();
+    }, [])
+ )
 
   const loadLoginData = async () => {
     try {
       const value = await AsyncStorage.getItem('loginInfo');
       if (value) {
-          const parsedValue = JSON.parse(value);
-          setLoginData(parsedValue);
+        const parsedValue = JSON.parse(value);
+        setLoginData(parsedValue);
       }
     } catch (e) {
       console.error('Failed to load loginData:', e);
@@ -24,13 +29,9 @@ export default function Mypage() {
 };
 
   useEffect(() => {
-    loadLoginData();
-  }, []);
-
-  useEffect(() => {
     if (loginData) {
       setIsLogin(true);
-      console.log("로그인 데이터 있음")
+      console.log(loginData)
     } else {
       console.log("로그인 데이터 없음")
       setIsLogin(false);
@@ -51,13 +52,21 @@ export default function Mypage() {
       {
         isLogin ? 
           <View style={styles.topDiv}>
-            <Text style={commonStyles.titleText}>{loginData.patieName} 님 안녕하세요</Text>
-            <Text style={styles.what}>뭐라고 쓰지</Text>
+            <View style={[commonStyles.row, styles.container]}>
+            <Image
+                source={require('../assets/icon.png')}
+                style={styles.image}
+            />
+            <View style={styles.textContainer}>
+                <Text style={styles.name}>{loginData.memName}</Text>
+                <Text style={styles.id}>{loginData.memId}</Text>
+            </View>
+        </View>
           </View>
+          
         :
           <View style={styles.topDiv}>
-            <Text style={commonStyles.titleText}>로그인이 필요합니다</Text>
-            <Text style={styles.what}>로그인이 필요하다고</Text>
+            <Text style={styles.what}>로그인이 필요한 서비스</Text>
           </View>
       }
       <View style={styles.table}>
@@ -105,12 +114,21 @@ export default function Mypage() {
         </TouchableOpacity>
       </View>
       <View style={[styles.btnDiv, commonStyles.btnDiv, commonStyles.bottomDiv]}>
-        <TouchableOpacity style={[styles.btn, commonStyles.btn]} onPress={() => {
-            removeData("loginInfo");
-            setIsLogin(false);
-            }} >
-            <Text style={commonStyles.btnText}>로그아웃</Text>
-        </TouchableOpacity>
+        {
+          isLogin ?
+            <TouchableOpacity style={[styles.btn, commonStyles.btn]} onPress={() => {
+                removeData("loginInfo");
+                setIsLogin(false);
+                }} >
+                <Text style={commonStyles.btnText}>로그아웃</Text>
+            </TouchableOpacity>
+          :
+            <TouchableOpacity style={[styles.btn, commonStyles.btn]} onPress={() => {
+                navigate("LoginForm");
+                }} >
+                <Text style={commonStyles.btnText}>로그인</Text>
+            </TouchableOpacity>
+        }
       </View>
     </SafeAreaView>
   )
@@ -118,21 +136,31 @@ export default function Mypage() {
 
 const styles = StyleSheet.create({
   container: {
-      // flex: 1,
-      // backgroundColor: '#fff',
-      // justifyContent: 'center',
-      // padding: 16,
       alignItems: 'center',
   },
-  // titleText: {
-  //   fontWeight: 'bold',
-  // },
   what: {
-    fontWeight: 'bold',
-    fontSize: 50,
+    fontFamily: 'Pretendard-ExtraBold',
+    fontSize: 30,
     marginLeft: 10,
     marginTop:10,
   },
+  image: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 10,
+  },
+  textContainer: {
+    flexDirection: 'column',
+},
+name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+},
+id: {
+    fontSize: 14,
+    color: 'gray',
+},
   topDiv: {
     borderBottomWidth: 2,
     borderColor: '#444',
@@ -144,9 +172,6 @@ const styles = StyleSheet.create({
     marginTop: 50,
     padding: 10,
   },
-  // row: {
-  //   flexDirection: 'row',
-  // },
   cell: {
     paddingHorizontal: 10,
     paddingVertical: 10,
@@ -160,29 +185,10 @@ const styles = StyleSheet.create({
     width: '100%',
     fontFamily: 'Pretendard-Regular',
   },
-  // leftAlign: {
-  //   textAlign: 'left',
-  // },
-  // rightAlign: {
-  //   textAlign: 'right',
-  // },
   btnDiv: {
     width: '100%',
-    // marginTop: 20,
-    // alignItems: 'center',
   },
   btn: {
       fontFamily: 'Pretendard-Regular',
-      // backgroundColor: '#f1f1f1',
-      // borderRadius: 3,
-      // width: '100%',
-      // paddingVertical: 10
   },
-  // btnText: {
-  //     textAlign: 'center',
-  //     fontWeight: 'bold',
-  // },
-  // bottomDiv: {
-  //   marginTop: 'auto'
-  // },
 })
