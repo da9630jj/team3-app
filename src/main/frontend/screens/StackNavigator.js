@@ -6,14 +6,16 @@ import NewPatientForm from './NewPatientForm';
 import RePatientForm from './RePatientForm';
 import LoginForm from './LoginForm';
 import Mypage from './Mypage';
+import Home from './Home';
 
 const Stack = createStackNavigator();
 
 export default function StackNavigator() {
 
    return (
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="TabNavigator">
          <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
+         <Stack.Screen name="Home" component={Home} options={{title: ''}} />
          <Stack.Screen name="RePatientForm" component={RePatientForm} options={{title: ''}} />
          <Stack.Screen name="NewPatientForm" component={NewPatientForm} options={{title: ''}} />
          <Stack.Screen name="WaitingInfo" component={WaitingInfo} options={{title: ''}} />

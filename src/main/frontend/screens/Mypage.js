@@ -14,11 +14,12 @@ export default function Mypage() {
     React.useCallback(() => {
       loadLoginData();
     }, [])
- )
+  )
 
   const loadLoginData = async () => {
     try {
       const value = await AsyncStorage.getItem('loginInfo');
+      //const value = window.localStorage.getItem('loginInfo');
       if (value) {
         const parsedValue = JSON.parse(value);
         setLoginData(parsedValue);
@@ -96,14 +97,14 @@ export default function Mypage() {
             <Text style={[styles.cellText, commonStyles.rightAlign]}>→</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={commonStyles.row}>
+        {/* <TouchableOpacity style={commonStyles.row}>
           <View style={[styles.cell, styles.cell1]}>
             <Text style={[styles.cellText, commonStyles.leftAlign]}>뭘 쓸까요</Text>
           </View>
           <View style={[styles.cell, styles.cell1]}>
             <Text style={[styles.cellText, commonStyles.rightAlign]}>→</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity style={commonStyles.row}>
           <View style={[styles.cell, styles.cell1]}>
             <Text style={[styles.cellText, commonStyles.leftAlign]}>설정</Text>

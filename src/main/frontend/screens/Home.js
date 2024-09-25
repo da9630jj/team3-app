@@ -1,6 +1,6 @@
 import { StyleSheet, View, TouchableOpacity, Text, Button, Dimensions, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import commonStyles from './commonStyles'
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,6 +12,12 @@ export default function Home() {
    const [isRec, setIsRec] = useState(false);
    const [data, setData] = useState(null);
    const [loginData, setLoginData] = useState(null);
+
+   useFocusEffect(
+      React.useCallback(() => {
+         loadLoginData();
+      }, [])
+      )
 
    const loadData = async () => {
       try {

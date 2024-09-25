@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, RefreshControl, ScrollView, Alert, KeyboardAvoidingView } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation, CommonActions } from '@react-navigation/native';
 import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ex_ip } from '../external_ip';
@@ -8,7 +8,7 @@ import commonStyles from './commonStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons'; // Expo에서 제공하는 아이콘 사용
 
-export default function WaitingInfo() {
+export default function WaitingInfo({navigation}) {
    const { navigate } = useNavigation();
    const [waitPatie, setWaitPatie] = useState({});
    const [waitCount, setWaitCount] = useState(0); 
@@ -101,7 +101,8 @@ export default function WaitingInfo() {
                   .then((res) => {
                      alert('접수가 취소되었습니다.');
                      removeData('recInfo');
-                     navigate('Home');
+                     // navigate.replace('Home');
+                     resetToHome();
                   })
                   .catch((error) => {
                      console.log(error);
@@ -111,7 +112,17 @@ export default function WaitingInfo() {
          ],
          { cancelable: false }
       );
-      }
+   }
+
+   function resetToHome() {
+      navigation.dispatch(
+         CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+         })
+      );
+      // navigation.replace('Home');
+   };
 
    return (
       <KeyboardAvoidingView style={[styles.container, commonStyles.container]}>
@@ -166,17 +177,21 @@ export default function WaitingInfo() {
                            </View>
                      </View>
                   </View>
-                  <View style={styles.noDiv}>
+                  {/* <View style={styles.noDiv}>
                      <Text style={styles.noText}>먼가 더 쓸 게 생기겠지요...</Text>
                      <Text style={styles.noText}>먼가 더 쓸 게 생기겠지요...</Text>
-                  </View>
+                  </View> */}
                </View>
          </ScrollView>
          <View style={commonStyles.btnDiv}>
             <TouchableOpacity style={[commonStyles.btn, styles.btn]} onPress={() => delFirPatie()}>
                <Text style={commonStyles.btnText}>접수 취소</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[commonStyles.btn, styles.btn]} onPress={() => navigate('Home')}>
+            <TouchableOpacity style={[commonStyles.btn, styles.btn]} onPress={() => {
+               // navigate.replace('Home')
+               resetToHome()
+            }
+            }>
                <Text style={commonStyles.btnText}>홈으로 이동</Text>
             </TouchableOpacity>
          </View>
@@ -189,7 +204,7 @@ const styles = StyleSheet.create({
       alignContent: 'center',
    },
    waitingNum: {
-      fontWeight: 'bold',
+      fontFamily: 'Pretendard-Bold',
       fontSize: 50,
       marginLeft: 10
    },
@@ -214,6 +229,7 @@ const styles = StyleSheet.create({
    cellText: {
       fontSize: 16,
       width: '100%',
+      fontFamily: 'Pretendard-Medium'
    },
    noDiv: {
       
@@ -223,6 +239,7 @@ const styles = StyleSheet.create({
    },
    buttonText: {
       marginRight: 5,
+      fontFamily: 'Pretendard-Medium',
    },
    button: {
       marginTop: 3

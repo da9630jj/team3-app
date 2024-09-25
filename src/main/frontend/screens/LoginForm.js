@@ -56,18 +56,19 @@ export default function LoginForm({navigation}){
    };
 
    // 세션에 데이터 저장
-   const saveData = async () => {
+   const saveData = async (data) => {
       try {
       const loginData = {
-         memId: loginMember.memId,
-         memNum: loginMember.memNum,
-         memName: loginMember.memName,
-         memBirth: loginMember.memBirth,
+         memId: data.memId,
+         memNum: data.memNum,
+         memName: data.memName,
+         memBirth: data.memBirth,
       };
 
       console.log(loginData);
 
       await AsyncStorage.setItem('loginInfo', JSON.stringify(loginData));
+      //window.localStorage.setItem('loginInfo', JSON.stringify(loginData));
       } catch (e) {
          console.error('Failed to save data:', e);
       }
@@ -101,6 +102,7 @@ export default function LoginForm({navigation}){
                placeholderTextColor="#dddddd"
                value={formDataLogin.memPw}
                onChangeText={(text) => handleInputChange('memPw', text)}
+               secureTextEntry={true}
                />
             </View>
          </View>
@@ -128,12 +130,12 @@ export default function LoginForm({navigation}){
             </TouchableOpacity>
          </View>
 
-         <View>
+         {/* <View>
             <Text>아이디: {formDataLogin.memId}</Text>
             <Text>비밀번호: {formDataLogin.memPw}</Text>
             <Text>로그인 멤버: {loginMember.memNum}번, {loginMember.memName}님, {loginMember.memId}, {loginMember.memBirth}
             </Text>
-         </View>
+         </View> */}
       </SafeAreaView>
    );
 }

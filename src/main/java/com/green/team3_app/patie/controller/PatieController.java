@@ -53,12 +53,7 @@ public class PatieController {
     public MemberVO login(@RequestBody MemberVO memberVO) {
 //    public MemberVO login(@RequestBody MemberVO memberVO, HttpSession session) {
 
-        //로그인 진행
-        MemberVO loginInfo = patieService.login(memberVO);
 
-//        if(loginInfo != null){
-//            session.setAttribute("patNum", loginInfo.);
-//        }
 
         return patieService.login(memberVO);
     }
