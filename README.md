@@ -11,8 +11,7 @@
 </br>
 
 ## ✨ 프로젝트 소개
-// 이미지
-
+![깃허브용_2_그린카페앱](https://github.com/user-attachments/assets/ea2d26c5-3649-497d-9f9a-4ac5eb3320cc)
 Raspberry Pi의 Beacon 기능과 React Native를 이용해 가상의 병원인 '그린카페병원'의 **온라인 사전 문진 어플리케이션** 구현
 
 </br>
@@ -51,29 +50,25 @@ Raspberry Pi의 Beacon 기능과 React Native를 이용해 가상의 병원인 '
 <br>
 
 ### 어플 접속 및 초진 환자 전용 사전문진 작성
-// 이미지
-
+![2_어플접속및초진환자](https://github.com/user-attachments/assets/94dd80a7-520b-4700-8607-ae04b08fc7d4)
 // 설명
 
 <br>
 
 ### 접수 취소
-// 이미지
-
+![2_접수취소](https://github.com/user-attachments/assets/8137cc18-a9cd-46a8-bd13-d5250a871ec2)
 //설명
 
 <br>
 
 ### 로그인 및 재방문 환자 전용 사전문진 작성
-// 이미지
-
+![2_재방문환자](https://github.com/user-attachments/assets/a126d1f9-700c-4d16-a981-37b47d324f06)
 // 설명
 
 <br>
 
 ### 대기 정보 갱신
-// 이미지
-
+![2_접수정보갱신](https://github.com/user-attachments/assets/c98901cb-a3f1-4c63-950e-69812d90422d)
 // 설명
 
 <br>
